@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/11 01:32:34 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/12 00:11:19 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	t_token	*tokens;
 	t_setup	env;
-	//t_token	*temp;
+	t_token	*temp;
 	t_cmd	*cmds;
 
 	(void)argc;
@@ -55,9 +55,45 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 		tokens = lexer(input);
+		if (strcmp(input, "exit") == 0)
+		{
+			free_tokens(tokens);
+			free(input);
+			break ;
+		}
+		printf("\n---ANTES DE EXPANDIR---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
+		temp = tokens;
+		expander(temp, env);
+		printf("\n---APÓS EXPANDIR---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
 		expander(tokens, env);
 		retokenizer(&tokens);
+		printf("\n---APÓS RETOKENIZER---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
 		remove_quotes(tokens);
+		printf("\n---APÓS REMOVER QUOTES---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
 		cmds = build_commands(tokens);
 		print_commands(cmds);
 

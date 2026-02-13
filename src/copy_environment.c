@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 22:30:49 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/11 00:54:54 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/13 00:31:56 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static void	free_env(char **envp, int limit)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	while (i < limit)
 	{
@@ -25,21 +25,21 @@ static void	free_env(char **envp, int limit)
 	free(envp);
 }
 
-int env_size(char **envp)
+int	env_size(char **envp)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
 	while (envp && envp[i])
 		i++;
 	return (i);
 }
 
-char **copy_environment(char **envp)
+char	**copy_environment(char **envp)
 {
-	char **new_env;
-	int size;
-	int i;
+	char	**new_env;
+	int		size;
+	int		i;
 
 	size = env_size(envp);
 	new_env = malloc(sizeof(char *) * (size + 1));
@@ -53,7 +53,7 @@ char **copy_environment(char **envp)
 		{
 			free_env(new_env, i);
 			return (NULL);
-		} 
+		}
 		i++;
 	}
 	new_env[i] = NULL;

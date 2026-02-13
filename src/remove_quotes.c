@@ -6,19 +6,19 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 00:22:14 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/01/30 00:30:11 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/13 00:23:14 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *remove_quote(char *str)
+char	*remove_quote(char *str)
 {
-	char *new_str;
-	int i;
-	int j;
-	t_state state;
-	t_state next_state;
+	char	*new_str;
+	int		i;
+	int		j;
+	t_state	state;
+	t_state	next_state;
 
 	new_str = malloc(sizeof(char) * (ft_strlen(str) + 1));
 	if (!new_str)

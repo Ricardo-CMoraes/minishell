@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnovais <jnovais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 20:57:22 by jnovais           #+#    #+#             */
-/*   Updated: 2026/02/11 09:42:49 by jnovais          ###   ########.fr       */
+/*   Updated: 2026/02/13 00:45:40 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ char	*find_cmd_path(char *cmd, char **envp)
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
 			path = envp[i] + 5;
-			break;
+			break ;
 		}
 		i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/12 00:11:19 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/12 01:25:40 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,11 @@ int	main(int argc, char **argv, char **envp)
 
 
 // TO DO
-// 1. Checar leak de FD abertos
-// 2. Estudar mais sobre redirections.
-// 3. Realizar mais testes individuais sobre redirections
-// 4. 
+// 1. Criar expansão do $?
+// 2. Checar leak de FD abertos
+// 3. Estudar mais sobre redirections.
+// 4. Realizar mais testes individuais sobre redirections
+// 5. 
 //
 //
 //

@@ -17,6 +17,10 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <fcntl.h>
+# include <string.h>
+# include <errno.h>
+# include <unistd.h>
+# include <stdlib.h>
 # include <sys/wait.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -118,6 +122,7 @@ void	open_output_file(t_cmd *node, char *filename, t_token_type type);
 void	open_input_file(t_cmd *node, char *path, t_token_type type);
 void	handle_redirections(t_cmd *node, t_token **tokens);
 
+<<<<<<< HEAD
 
 //handle_errors.c
 void	syntax_error_message(char *token_value);
@@ -132,3 +137,30 @@ void	process_all_heredocs(t_token *tokens);
 int		env_size(char **envp);
 char	**copy_environment(char **envp);
 #endif
+=======
+//executor.c
+int		execute_cmd(t_cmd *cmd, char **envp);
+
+//builtins
+int		is_builtin(const char *cmd);
+int		execute_builtin(t_cmd *cmd, char ***envp);
+int		fd_echo(char **args, int fd_out);
+int		fd_env(char **envp, int fd_out);
+int		fd_pwd(int fd_out);
+int		fd_cd(char **args, char ***envp, int fd_out);
+int		fd_export(char **args, char ***envp, int fd_out);
+int		fd_unset(char **args, char ***envp);
+int		fd_exit(char **args);
+
+//env utils
+char	**env_dup(char **envp);
+int		env_set(char ***envp, const char *key, const char *value);
+int		env_unset(char **envp, const char *key);
+int		env_is_valid_name(const char *name);
+
+//path.c
+char	*get_dir(char *path, char *cmd);
+char	*find_cmd_path(char *cmd, char **envp);
+
+#endif
+>>>>>>> feature/exec

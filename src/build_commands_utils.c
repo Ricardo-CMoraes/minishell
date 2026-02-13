@@ -6,15 +6,15 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 21:26:29 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/03 23:24:44 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/13 00:35:28 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_cmd *create_cmd_node()
+t_cmd	*create_cmd_node(void)
 {
-	t_cmd *node;
+	t_cmd	*node;
 
 	node = malloc(sizeof(t_cmd));
 	if (!node)
@@ -27,9 +27,9 @@ t_cmd *create_cmd_node()
 	return (node);
 }
 
-void add_cmd(t_cmd *new_node, t_cmd **head)
+void	add_cmd(t_cmd *new_node, t_cmd **head)
 {
-	t_cmd *temp;
+	t_cmd	*temp;
 
 	if (!new_node | !head)
 		return ;
@@ -44,18 +44,20 @@ void add_cmd(t_cmd *new_node, t_cmd **head)
 	}
 }
 
-int count_args(t_token *tokens)
+int	count_args(t_token *tokens)
 {
 	int	i;
-	
+
 	i = 0;
 	while (tokens && (tokens->type != PIPE))
 	{
 		if (is_redirect(tokens->type))
 		{
-			tokens = tokens->next; // Pula operador
+			// Pula operador
+			tokens = tokens->next;
+			// Pula o nome do arquivo
 			if (tokens)
-				tokens = tokens->next; // Pula o nome do arquivo
+				tokens = tokens->next;
 		}
 		else
 		{
@@ -66,9 +68,9 @@ int count_args(t_token *tokens)
 	return (i);
 }
 
-int is_redirect(t_token_type type)
+int	is_redirect(t_token_type type)
 {
-	if (type == RED_OUT || type == RED_IN 
+	if (type == RED_OUT || type == RED_IN
 		|| type == APPEND || type == HERE_DOC)
 	{
 		return (1);
@@ -76,10 +78,10 @@ int is_redirect(t_token_type type)
 	return (0);
 }
 
-void free_commands(t_cmd *cmds)
+void	free_commands(t_cmd *cmds)
 {
-	t_cmd *tmp;
-	int   i;
+	t_cmd	*tmp;
+	int		i;
 
 	while (cmds)
 	{

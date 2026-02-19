@@ -137,6 +137,7 @@ char		**copy_environment(char **envp);
 
 //executor.c
 int			execute_cmd(t_cmd *cmd, char **envp);
+void		execute_pipeline(t_cmd *cmds, char ***envp);
 
 //builtins
 int			is_builtin(const char *cmd);

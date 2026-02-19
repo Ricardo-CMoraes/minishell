@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 13:06:57 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/01/29 23:12:10 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/13 00:29:02 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	free_arr(char **array)
 	if (!array)
 		return ;
 	i = 0;
-	while(array[i])
+	while (array[i])
 	{
 		free(array[i]);
 		i++;

@@ -6,11 +6,13 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/01 23:12:20 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/12 01:25:40 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int g_exit_status = 0;
 
 static void print_commands(t_cmd *head)
 {
@@ -22,6 +24,7 @@ static void print_commands(t_cmd *head)
         printf("\n--- COMANDO %d ---\n", ++cmd_count);
         printf("FD IN: %d\n", head->fd_in);
         printf("FD OUT: %d\n", head->fd_out);
+		printf("INVALID: %d\n", head->invalid);
         i = 0;
         while (head->args && head->args[i])
         {
@@ -42,12 +45,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	env.envp = env_dup(envp);
-	if (!env.envp && envp)
-	{
-		ft_putendl_fd("minishell: failed to init env", 2);
-		return (1);
-	}
+	env.envp = copy_environment(envp);
 	while (1)
 	{
 		input = readline("minishell > ");
@@ -57,8 +55,37 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 		tokens = lexer(input);
+		if (strcmp(input, "exit") == 0)
+		{
+			free_tokens(tokens);
+			free(input);
+			break ;
+		}
+		printf("\n---ANTES DE EXPANDIR---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
+		temp = tokens;
+		expander(temp, env);
+		printf("\n---APÓS EXPANDIR---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
 		expander(tokens, env);
 		retokenizer(&tokens);
+		printf("\n---APÓS RETOKENIZER---\n");
+		temp = tokens;
+		while (temp)
+		{
+			printf("Value: %s\tType: %d\n", temp->value, temp->type);
+			temp = temp->next;
+		}
 		remove_quotes(tokens);
 		printf("\n---APÓS REMOVER QUOTES---\n");
 		temp = tokens;
@@ -80,6 +107,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		//free_commands(cmds);
 		free_tokens(tokens);
+		free_commands(cmds);
 		free(input);
 	}
 	return (0);
@@ -87,10 +115,11 @@ int	main(int argc, char **argv, char **envp)
 
 
 // TO DO
-// 1. implementar handle redirections
-// 2. incluir free do cmds
-// 3. 
-// 4. 
+// 1. Criar expansão do $?
+// 2. Checar leak de FD abertos
+// 3. Estudar mais sobre redirections.
+// 4. Realizar mais testes individuais sobre redirections
+// 5. 
 //
 //
 //

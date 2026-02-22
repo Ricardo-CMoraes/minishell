@@ -97,14 +97,8 @@ int	main(int argc, char **argv, char **envp)
 		cmds = build_commands(tokens);
 		print_commands(cmds);
 
-		//talvez aqui valha a pena ficar em um arquivo separado a execução dos comandos
-		if (cmds && cmds->args && cmds->args[0])
-		{
-			if (is_builtin(cmds->args[0]))
-				execute_builtin(cmds, &env.envp);
-			else
-				execute_cmd(cmds, env.envp);
-		}
+		if (cmds)
+			execute_pipeline(cmds, &env.envp);
 		//free_commands(cmds);
 		free_tokens(tokens);
 		free_commands(cmds);

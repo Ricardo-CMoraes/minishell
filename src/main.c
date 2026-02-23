@@ -97,6 +97,7 @@ int	main(int argc, char **argv, char **envp)
 		cmds = build_commands(tokens);
 		print_commands(cmds);
 
+		printf("\n################################\n\n");
 		if (cmds)
 			execute_pipeline(cmds, &env.envp);
 		//free_commands(cmds);
@@ -109,7 +110,6 @@ int	main(int argc, char **argv, char **envp)
 
 
 // TO DO
-// 1. Criar expansão do $?
 // 2. Checar leak de FD abertos
 // 3. Estudar mais sobre redirections.
 // 4. Realizar mais testes individuais sobre redirections

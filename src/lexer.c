@@ -43,7 +43,7 @@ void	handler_redirection(char *input, t_token **head, int *i)
 	else if (input[*i] == '<')
 	{
 		if (input[*i + 1] == '<') // is a HRE_DOC
-			add_token(create_token(ft_strdup(">>"), HERE_DOC), head, i);
+			add_token(create_token(ft_strdup("<<"), HERE_DOC), head, i);
 		else //RED_IN
 			add_token(create_token(ft_strdup("<"), RED_IN), head, i);
 	}

@@ -22,6 +22,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/wait.h>
+# include <signal.h>
+# include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -125,6 +127,7 @@ void		handle_redirections(t_cmd *node, t_token **tokens);
 //handle_errors.c
 void		syntax_error_message(char *token_value);
 void		set_error(const char *s, t_cmd *node, int status_error);
+void		unlink_heredocs(t_token *tokens);
 
 //here_doc.c
 char		*generate_tmp_filename(int index);
@@ -159,5 +162,9 @@ int			env_is_valid_name(const char *name);
 //path.c
 char		*get_dir(char *path, char *cmd);
 char		*find_cmd_path(char *cmd, char **envp);
+
+void		handle_sigint(int sig);
+void		setup_signals(void);
+void		handle_sigint_heredoc(int sig);
 
 #endif

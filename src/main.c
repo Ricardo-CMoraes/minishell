@@ -40,7 +40,7 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	t_token	*tokens;
 	t_setup	env;
-	t_token	*temp;
+	//t_token	*temp;
 	t_cmd	*cmds;
 
 	(void)argc;
@@ -48,12 +48,14 @@ int	main(int argc, char **argv, char **envp)
 	env.envp = copy_environment(envp);
 	while (1)
 	{
+		setup_signals();
 		input = readline("minishell > ");
 		if (!input)
 		{
 			printf("exit\n");
 			break ;
 		}
+		//add_history(input);
 		tokens = lexer(input);
 		if (strcmp(input, "exit") == 0)
 		{
@@ -61,50 +63,27 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			break ;
 		}
-		printf("\n---ANTES DE EXPANDIR---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
-		temp = tokens;
-		expander(temp, env);
-		printf("\n---APÓS EXPANDIR---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		expander(tokens, env);
 		retokenizer(&tokens);
-		printf("\n---APÓS RETOKENIZER---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		remove_quotes(tokens);
-		printf("\n---APÓS REMOVER QUOTES---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		cmds = build_commands(tokens);
-		print_commands(cmds);
-
-		printf("\n################################\n\n");
+		if (cmds == NULL && g_exit_status == 130)
+		{
+			unlink_heredocs(tokens);
+			free_tokens(tokens);
+			free(input);
+			continue ; 
+		}
 		if (cmds)
+		{
 			execute_pipeline(cmds, &env.envp);
-		//free_commands(cmds);
+		}
+		unlink_heredocs(tokens);
 		free_tokens(tokens);
 		free_commands(cmds);
 		free(input);
 	}
+	free_arr(env.envp);
 	return (0);
 }
 

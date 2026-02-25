@@ -30,3 +30,17 @@ void	set_error(const char *s, t_cmd *node, int status_error)
 		node->invalid = 1;
 	g_exit_status = status_error;
 }
+
+void unlink_heredocs(t_token *tokens)
+{
+	while (tokens)
+	{
+		if (tokens->type == HERE_DOC && tokens->next && tokens->next->hdoc_file)
+		{
+			unlink(tokens->next->hdoc_file);
+			free(tokens->next->hdoc_file);
+			tokens->next->hdoc_file = NULL;
+		}
+		tokens = tokens->next;
+	}
+}

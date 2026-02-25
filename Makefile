@@ -26,7 +26,8 @@ SRC = src/main.c \
 		src/path.c \
 		src/handle_errors.c \
 		src/here_doc.c \
-		src/copy_environment.c
+		src/copy_environment.c \
+		src/handle_signal.c
 
 OBJ = $(SRC:.c=.o)
 

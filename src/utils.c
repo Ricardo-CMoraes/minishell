@@ -22,6 +22,7 @@ t_token	*create_token(char *value, t_token_type type)
 	node->value = value;
 	node->type = type;
 	node->next = NULL;
+	node->hdoc_file = NULL;
 	return (node);
 }
 
@@ -44,6 +45,8 @@ void	free_tokens(t_token *head)
 		temp = head->next;
 		if (head->value)
 			free(head->value);
+		if (head->hdoc_file)
+			free(head->hdoc_file);
 		free(head);
 		head = temp;
 	}

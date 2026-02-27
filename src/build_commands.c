@@ -46,7 +46,11 @@ t_cmd	*build_commands(t_token *tokens)
 	int		pipe_rd;
 	int		fd_pipe[2];
 
+	if (g_exit_status == 130)
+		g_exit_status = 0;
 	process_all_heredocs(tokens);
+	if (g_exit_status == 130)
+		return (NULL);
 	head = NULL;
 	curr = tokens;
 	pipe_rd = 0;

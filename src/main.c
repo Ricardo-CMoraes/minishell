@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/12 01:25:40 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/26 22:56:25 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	t_token	*tokens;
 	t_setup	env;
-	t_token	*temp;
+	//t_token	*temp;
 	t_cmd	*cmds;
 
 	(void)argc;
@@ -48,72 +48,56 @@ int	main(int argc, char **argv, char **envp)
 	env.envp = copy_environment(envp);
 	while (1)
 	{
+		setup_signals();
 		input = readline("minishell > ");
 		if (!input)
 		{
 			printf("exit\n");
 			break ;
 		}
+		//add_history(input);
 		tokens = lexer(input);
+		if (check_syntax(tokens))
+        {
+            free_tokens(tokens);
+            free(input);
+            continue; // Já deu o erro, volta para o próximo prompt
+        }
 		if (strcmp(input, "exit") == 0)
 		{
 			free_tokens(tokens);
 			free(input);
 			break ;
 		}
-		printf("\n---ANTES DE EXPANDIR---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
-		temp = tokens;
-		expander(temp, env);
-		printf("\n---APÓS EXPANDIR---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		expander(tokens, env);
 		retokenizer(&tokens);
-		printf("\n---APÓS RETOKENIZER---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		remove_quotes(tokens);
-		printf("\n---APÓS REMOVER QUOTES---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
 		cmds = build_commands(tokens);
-		print_commands(cmds);
-
+		if (cmds == NULL && g_exit_status == 130)
+		{
+			unlink_heredocs(tokens);
+			free_tokens(tokens);
+			free(input);
+			continue ; 
+		}
 		if (cmds)
+		{
 			execute_pipeline(cmds, &env.envp);
-		//free_commands(cmds);
+		}
+		unlink_heredocs(tokens);
 		free_tokens(tokens);
 		free_commands(cmds);
 		free(input);
 	}
+	free_arr(env.envp);
 	return (0);
 }
 
 
 // TO DO
-// 1. Criar expansão do $?
-// 2. Checar leak de FD abertos
-// 3. Estudar mais sobre redirections.
-// 4. Realizar mais testes individuais sobre redirections
-// 5. 
+// 1. Finalizar Ctrl+C
+// 2. Finalizar Ctrl+D
+// 3. Implementar ;
 //
 //
 //

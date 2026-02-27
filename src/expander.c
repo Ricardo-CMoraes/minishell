@@ -45,7 +45,8 @@ char	*expand_and_join(char *new_str, char *str, int *i, t_setup env)
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		var_value = ft_strdup("0");
+		//var_value = ft_strdup("0");
+		var_value = ft_itoa(g_exit_status);
 		(*i)++;
 	}
 	else

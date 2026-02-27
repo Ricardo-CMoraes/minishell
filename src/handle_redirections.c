@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 22:39:58 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:44:20 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/26 22:06:55 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,15 +117,16 @@ void	handle_redirections(t_cmd *node, t_token **tokens)
 
 	type = (*tokens)->type;
 	*tokens = (*tokens)->next;
-	if (!(*tokens) || ((*tokens)->type != WORD))
+	
+	if (!(*tokens))
 	{
-		if ((*tokens)->value)
-			syntax_error_message("newline");
-		else
-			syntax_error_message((*tokens)->value);
-		node->invalid = 1;
-		g_exit_status = 2;
-		return ;
+		syntax_error_message(NULL, node, 2);
+		return ; 
+	}
+	if (((*tokens)->type != WORD))
+	{
+		syntax_error_message((*tokens)->value, node, 2);
+		return ;	
 	}
 	if (type == RED_OUT || type == APPEND)
 		open_output_file(node, (*tokens)->value, type);

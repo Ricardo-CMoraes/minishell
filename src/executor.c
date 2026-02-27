@@ -131,6 +131,8 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 
 	cmd = cmds;
 	last_pid = -1;
+	signal(SIGINT, SIG_IGN);
+    signal(SIGQUIT, SIG_IGN);
 	while (cmd)
 	{
 		if (cmd->invalid || !cmd->args || !cmd->args[0])
@@ -155,7 +157,11 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 			continue ;
 		}
 		if (last_pid == 0)
+		{
+			signal(SIGINT, SIG_DFL);
+    		signal(SIGQUIT, SIG_DFL);
 			child_process(cmd, cmds, envp);
+		}
 		close_and_reset_fds(cmd);
 		cmd = cmd->next;
 	}
@@ -165,8 +171,13 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 		if (WIFEXITED(status))
 			g_exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
+		{
 			g_exit_status = 128 + WTERMSIG(status);
+			if (g_exit_status == 130)
+                write(1, "\n", 1);
+		}
 	}
 	while (wait(NULL) > 0)
 		;
+	setup_signals();
 }

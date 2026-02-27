@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 00:50:47 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:52:36 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/27 00:35:14 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@ char	*generate_tmp_filename(int index)
 	filename = ft_strjoin(".heredoc_tmp_", num);
 	free(num);
 	return (filename);
+}
+
+static void warning_message(char *delimiter)
+{
+	ft_putstr_fd("minishell: warning: here-document delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd(delimiter, 2);
+	ft_putstr_fd("')\n", 2);
 }
 
 void	handle_heredoc_creation(t_token *delimiter_token, int index)
@@ -48,7 +55,7 @@ void	handle_heredoc_creation(t_token *delimiter_token, int index)
 		if (g_exit_status == 130 || !line || ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
 		{
 			if (g_exit_status != 130 && !line)
-				ft_putstr_fd("minishell: warning: here-document delimited by end-of-file\n", 2);
+				warning_message(delimiter);
 			free(line);
 			break ;
 		}

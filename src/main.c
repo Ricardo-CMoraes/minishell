@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/26 21:22:03 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/26 22:56:25 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,10 +95,9 @@ int	main(int argc, char **argv, char **envp)
 
 
 // TO DO
-// 2. Checar leak de FD abertos
-// 3. Estudar mais sobre redirections.
-// 4. Realizar mais testes individuais sobre redirections
-// 5. 
+// 1. Finalizar Ctrl+C
+// 2. Finalizar Ctrl+D
+// 3. Implementar ;
 //
 //
 //

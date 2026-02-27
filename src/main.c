@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/12 01:25:40 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/26 21:22:03 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,12 @@ int	main(int argc, char **argv, char **envp)
 		}
 		//add_history(input);
 		tokens = lexer(input);
+		if (check_syntax(tokens))
+        {
+            free_tokens(tokens);
+            free(input);
+            continue; // Já deu o erro, volta para o próximo prompt
+        }
 		if (strcmp(input, "exit") == 0)
 		{
 			free_tokens(tokens);

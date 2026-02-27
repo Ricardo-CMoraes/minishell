@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:27:15 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/26 21:52:01 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void		open_input_file(t_cmd *node, char *path, t_token_type type);
 void		handle_redirections(t_cmd *node, t_token **tokens);
 
 //handle_errors.c
-void		syntax_error_message(char *token_value);
+void		syntax_error_message(char *token_value, t_cmd *node, int status_error);
 void		set_error(const char *s, t_cmd *node, int status_error);
 void		unlink_heredocs(t_token *tokens);
 
@@ -166,5 +166,8 @@ char		*find_cmd_path(char *cmd, char **envp);
 void		handle_sigint(int sig);
 void		setup_signals(void);
 void		handle_sigint_heredoc(int sig);
+
+//check_syntax.c
+int			check_syntax(t_token	*tokens);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 00:22:14 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:23:14 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 21:47:11 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,12 @@ char	*remove_quote(char *str)
 		if (state != next_state)
 			state = next_state;
 		else
-		{
-			new_str[j] = str[i];
-			j++;
-		}
+			new_str[j++] = str[i];
 		i++;
 	}
 	new_str[j] = '\0';
 	return (new_str);
 }
-
-// Linha logo antes do primeiro if
-// i			0	1	2	3	4	5
-// 				"	'	R	i	'	"
-// state		O	D	D	D	D	D
-// next_state	D	D	D	D	D	O
-// new_str			'	R	i	'
 
 void	remove_quotes(t_token *tokens)
 {

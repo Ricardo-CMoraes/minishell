@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 13:06:57 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:29:02 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:53:06 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,18 @@ int	is_operator(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
+int	update_state(char c, int state)
+{
+	if (c == '\'' && state == OUT_QUOTE)
+		state = IN_SQUOTE;
+	else if (c == '\"' && state == OUT_QUOTE)
+		state = IN_DQUOTE;
+	else if ((c == '\'' && state == IN_SQUOTE)
+		|| (c == '\"' && state == IN_DQUOTE))
+		state = OUT_QUOTE;
+	return (state);
+}
+
 void	free_tokens(t_token *head)
 {
 	t_token	*temp;
@@ -52,18 +64,6 @@ void	free_tokens(t_token *head)
 	}
 }
 
-int	update_state(char c, int state)
-{
-	if (c == '\'' && state == OUT_QUOTE)
-		state = IN_SQUOTE;
-	else if (c == '\"' && state == OUT_QUOTE)
-		state = IN_DQUOTE;
-	else if ((c == '\'' && state == IN_SQUOTE)
-		|| (c == '\"' && state == IN_DQUOTE))
-		state = OUT_QUOTE;
-	return (state);
-}
-
 void	free_arr(char **array)
 {
 	int	i;
@@ -77,4 +77,16 @@ void	free_arr(char **array)
 		i++;
 	}
 	free(array);
+}
+
+void	free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr)
+{
+	if (tokens)
+		free_tokens(tokens);
+	if (cmds)
+		free_commands(cmds);
+	if (arr)
+		free_arr(arr); // Sua função que limpa char ** (env ou similares)
+	if (input)
+		free(input);
 }

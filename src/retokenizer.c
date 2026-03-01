@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/28 23:49:41 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/12 01:16:27 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 19:16:31 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,14 @@ void	split_and_relink(t_token *token)
 	free_arr(splited);
 }
 
-void	retokenizer(t_token **tokens)
+void	retokenizer(t_token **tokens, t_token *prev)
 {
 	t_token	*curr;
-	t_token	*prev;
 	t_token	*to_delete;
 
 	if (!tokens || !*tokens)
 		return ;
 	curr = *tokens;
-	prev = NULL;
 	while (curr)
 	{
 		if (curr->type == WORD && strchr(curr->value, 1))

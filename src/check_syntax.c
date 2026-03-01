@@ -6,16 +6,41 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 21:00:17 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/26 22:35:59 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 18:36:50 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int check_syntax(t_token	*tokens)
+int	pipe_syntax(t_token *tmp)
 {
-	t_token *tmp;
-	
+	if (!tmp->next || tmp->next->type == PIPE)
+	{
+		if (tmp->next)
+			syntax_error_message(tmp->next->value, NULL, 2);
+		else
+			syntax_error_message(NULL, NULL, 2);
+		return (1);
+	}
+	return (0);
+}
+
+int	redirect_syntax(t_token *tmp)
+{
+	if (!tmp->next || tmp->next->type != WORD)
+	{
+		if (tmp->next)
+			syntax_error_message(tmp->next->value, NULL, 2);
+		else
+			syntax_error_message(NULL, NULL, 2);
+		return (1);
+	}
+}
+
+int	check_syntax(t_token	*tokens)
+{
+	t_token	*tmp;
+
 	if (!tokens)
 		return (0);
 	if (tokens->type == PIPE)
@@ -28,25 +53,13 @@ int check_syntax(t_token	*tokens)
 	{
 		if (tmp->type == PIPE)
 		{
-			if (!tmp->next || tmp->next->type == PIPE)
-			{
-				if (tmp->next)
-					syntax_error_message(tmp->next->value, NULL, 2);
-				else
-					syntax_error_message(NULL, NULL, 2);
+			if (pipe_syntax(tmp))
 				return (1);
-			}
 		}
 		else if (tmp->type >= RED_OUT && tmp->type <= HERE_DOC)
 		{
-			if (!tmp->next || tmp->next->type != WORD)
-			{
-				if (tmp->next)
-					syntax_error_message(tmp->next->value, NULL, 2);
-				else
-					syntax_error_message(NULL, NULL, 2);
+			if (redirect_syntax(tmp))
 				return (1);
-			}
 		}
 		tmp = tmp->next;
 	}

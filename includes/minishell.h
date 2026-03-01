@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/26 21:52:01 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:40:33 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void		free_tokens(t_token *head);
 int			update_state(char c, int state);
 char		*clean_quotes(char *str);
 void		free_arr(char **array);
+void		free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr);
+
 
 //lexer.c
 void		add_token(t_token *new_token, t_token **head, int *i);
@@ -101,7 +103,7 @@ void		prepare_to_split(char *var_value, int state);
 char		*ft_getenv(char *name, char **env);
 
 // retokenizer.c
-void		retokenizer(t_token **tokens);
+void	retokenizer(t_token **tokens, t_token *prev);
 void		split_and_relink(t_token *token);
 
 //remove_quotes.c
@@ -110,7 +112,7 @@ void		remove_quotes(t_token *tokens);
 
 //build_commands
 char		**fill_args(t_token **tokens, t_cmd *new_node);
-t_cmd		*build_commands(t_token *tokens);
+t_cmd	*build_commands(t_token *tokens, t_cmd *head);
 
 //build_commands_utils.c
 t_cmd		*create_cmd_node(void);
@@ -125,14 +127,15 @@ void		open_input_file(t_cmd *node, char *path, t_token_type type);
 void		handle_redirections(t_cmd *node, t_token **tokens);
 
 //handle_errors.c
-void		syntax_error_message(char *token_value, t_cmd *node, int status_error);
+void		syntax_error_message(char *token_value, t_cmd *node,
+				int status_error);
 void		set_error(const char *s, t_cmd *node, int status_error);
 void		unlink_heredocs(t_token *tokens);
 
 //here_doc.c
 char		*generate_tmp_filename(int index);
-void		handle_heredoc_creation(t_token *delimiter_token, int index);
-void		process_all_heredocs(t_token *tokens);
+void		handle_heredoc_creation(t_token *dlmt_token, int index);
+int			process_all_heredocs(t_token *tokens);
 
 //copy_environment.c
 int			env_size(char **envp);
@@ -142,7 +145,7 @@ char		**copy_environment(char **envp);
 int			execute_cmd(t_cmd *cmd, char **envp);
 void		execute_pipeline(t_cmd *cmds, char ***envp);
 
-//builtins
+//builtins.c
 int			is_builtin(const char *cmd);
 int			execute_builtin(t_cmd *cmd, char ***envp);
 int			fd_echo(char **args, int fd_out);
@@ -168,6 +171,8 @@ void		setup_signals(void);
 void		handle_sigint_heredoc(int sig);
 
 //check_syntax.c
+int			pipe_syntax(t_token *tmp);
+int			redirect_syntax(t_token *tmp);
 int			check_syntax(t_token	*tokens);
 
 #endif

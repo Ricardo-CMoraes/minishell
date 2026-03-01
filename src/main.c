@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/27 00:52:57 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:45:53 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,32 +58,29 @@ int	main(int argc, char **argv, char **envp)
 		add_history(input);
 		tokens = lexer(input);
 		if (check_syntax(tokens))
-        {
-            free_tokens(tokens);
-            free(input);
-            continue; // Já deu o erro, volta para o próximo prompt
-        }
-		expander(tokens, env);
-		retokenizer(&tokens);
-		remove_quotes(tokens);
-		cmds = build_commands(tokens);
-		if (cmds == NULL && g_exit_status == 130)
+		{
+			free_all(input, tokens, NULL, NULL);
+			continue;
+		}
+		if (process_all_heredocs(tokens))
 		{
 			unlink_heredocs(tokens);
-			free_tokens(tokens);
-			free(input);
-			continue ; 
+			free_all(input, tokens, NULL, NULL);
+			continue;
 		}
+
+		expander(tokens, env);
+		retokenizer(&tokens, NULL);
+		remove_quotes(tokens);
+		cmds = build_commands(tokens, NULL);
 		if (cmds)
 		{
 			execute_pipeline(cmds, &env.envp);
 		}
 		unlink_heredocs(tokens);
-		free_tokens(tokens);
-		free_commands(cmds);
-		free(input);
+		free_all(input, tokens, cmds, NULL);
 	}
-	free_arr(env.envp);
+	free_all(NULL, NULL, NULL, env.envp);
 	return (0);
 }
 

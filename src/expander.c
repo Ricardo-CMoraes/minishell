@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/25 00:30:43 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/01/25 23:25:02 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 19:19:43 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ char	*expand_and_join(char *new_str, char *str, int *i, t_setup env)
 	(*i)++;
 	if (str[*i] == '?')
 	{
-		//var_value = ft_strdup("0");
 		var_value = ft_itoa(g_exit_status);
 		(*i)++;
 	}
@@ -58,7 +57,7 @@ char	*expand_and_join(char *new_str, char *str, int *i, t_setup env)
 			var_value = ft_strdup("");
 		free(var_name);
 	}
-	prepare_to_split(var_value, env.state); //lOGICA PARA RETOKENIZAR
+	prepare_to_split(var_value, env.state);
 	temp = ft_strjoin(new_str, var_value);
 	free(new_str);
 	free(var_value);

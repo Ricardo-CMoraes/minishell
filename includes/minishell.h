@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/28 22:40:33 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/01 18:38:03 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,5 +174,7 @@ void		handle_sigint_heredoc(int sig);
 int			pipe_syntax(t_token *tmp);
 int			redirect_syntax(t_token *tmp);
 int			check_syntax(t_token	*tokens);
+
+int	process_input(t_token **tokens, t_cmd **cmds,t_setup *envp);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/26 22:56:25 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:45:53 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,26 @@
 
 int g_exit_status = 0;
 
-static void print_commands(t_cmd *head)
-{
-    int i;
-    int cmd_count = 0;
+// static void print_commands(t_cmd *head)
+// {
+// 	int i;
+// 	int cmd_count = 0;
 
-    while (head)
-    {
-        printf("\n--- COMANDO %d ---\n", ++cmd_count);
-        printf("FD IN: %d\n", head->fd_in);
-        printf("FD OUT: %d\n", head->fd_out);
-		printf("INVALID: %d\n", head->invalid);
-        i = 0;
-        while (head->args && head->args[i])
-        {
-            printf("Arg[%d]: %s\n", i, head->args[i]);
-            i++;
-        }
-        head = head->next;
-    }
-}
+// 	while (head)
+// 	{
+// 		printf("\n--- COMANDO %d ---\n", ++cmd_count);
+// 		printf("FD IN: %d\n", head->fd_in);
+// 		printf("FD OUT: %d\n", head->fd_out);
+// 		printf("INVALID: %d\n", head->invalid);
+// 		i = 0;
+// 		while (head->args && head->args[i])
+// 		{
+// 			printf("Arg[%d]: %s\n", i, head->args[i]);
+// 			i++;
+// 		}
+// 		head = head->next;
+// 	}
+// }
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -55,41 +55,32 @@ int	main(int argc, char **argv, char **envp)
 			printf("exit\n");
 			break ;
 		}
-		//add_history(input);
+		add_history(input);
 		tokens = lexer(input);
 		if (check_syntax(tokens))
-        {
-            free_tokens(tokens);
-            free(input);
-            continue; // Já deu o erro, volta para o próximo prompt
-        }
-		if (strcmp(input, "exit") == 0)
 		{
-			free_tokens(tokens);
-			free(input);
-			break ;
+			free_all(input, tokens, NULL, NULL);
+			continue;
 		}
-		expander(tokens, env);
-		retokenizer(&tokens);
-		remove_quotes(tokens);
-		cmds = build_commands(tokens);
-		if (cmds == NULL && g_exit_status == 130)
+		if (process_all_heredocs(tokens))
 		{
 			unlink_heredocs(tokens);
-			free_tokens(tokens);
-			free(input);
-			continue ; 
+			free_all(input, tokens, NULL, NULL);
+			continue;
 		}
+
+		expander(tokens, env);
+		retokenizer(&tokens, NULL);
+		remove_quotes(tokens);
+		cmds = build_commands(tokens, NULL);
 		if (cmds)
 		{
 			execute_pipeline(cmds, &env.envp);
 		}
 		unlink_heredocs(tokens);
-		free_tokens(tokens);
-		free_commands(cmds);
-		free(input);
+		free_all(input, tokens, cmds, NULL);
 	}
-	free_arr(env.envp);
+	free_all(NULL, NULL, NULL, env.envp);
 	return (0);
 }
 
@@ -98,8 +89,6 @@ int	main(int argc, char **argv, char **envp)
 // 1. Finalizar Ctrl+C
 // 2. Finalizar Ctrl+D
 // 3. Implementar ;
-//
-//
-//
+// 3. Incluir o add_history()ç
 //
 //

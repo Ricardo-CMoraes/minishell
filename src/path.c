@@ -74,6 +74,10 @@ char	*find_cmd_path(char *cmd, char **envp)
 	char	*result;
 	int		i;
 
+	if (!cmd || !*cmd)
+		return (NULL);
+	if (ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
 	i = 0;
 	path = NULL;
 	while (envp[i])

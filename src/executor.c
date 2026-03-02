@@ -99,6 +99,7 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->args[0], 2);
 		ft_putstr_fd(": command not found\n", 2);
+		g_exit_status = 127;
 		return (127);
 	}
 	pid = fork();
@@ -106,6 +107,7 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 	{
 		perror("fork");
 		free(path);
+		g_exit_status = 1;
 		return (1);
 	}
 	if (pid == 0)
@@ -119,8 +121,12 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 	free(path);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	return (1);
+		g_exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		g_exit_status = 128 + WTERMSIG(status);
+	else
+		g_exit_status = 1;
+	return (g_exit_status);
 }
 
 void	execute_pipeline(t_cmd *cmds, char ***envp)
@@ -128,22 +134,29 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 	t_cmd	*cmd;
 	pid_t	last_pid;
 	int		status;
+	int		executed_any;
+	int		had_invalid;
 
 	cmd = cmds;
 	last_pid = -1;
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
+	executed_any = 0;
+	had_invalid = 0;
 	while (cmd)
 	{
 		if (cmd->invalid || !cmd->args || !cmd->args[0])
 		{
 			close_and_reset_fds(cmd);
+			if (cmd->invalid)
+				had_invalid = 1;
 			cmd = cmd->next;
 			continue ;
 		}
 		if (!cmds->next && is_builtin(cmd->args[0]))
 		{
 			g_exit_status = execute_builtin(cmd, envp);
+			executed_any = 1;
 			close_and_reset_fds(cmd);
 			cmd = cmd->next;
 			continue ;
@@ -152,10 +165,12 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 		if (last_pid == -1)
 		{
 			perror("fork");
+			g_exit_status = 1;
 			close_and_reset_fds(cmd);
 			cmd = cmd->next;
 			continue ;
 		}
+		executed_any = 1;
 		if (last_pid == 0)
 		{
 			signal(SIGINT, SIG_DFL);
@@ -176,6 +191,13 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 			if (g_exit_status == 130)
                 write(1, "\n", 1);
 		}
+	}
+	else if (!executed_any)
+	{
+		if (had_invalid && g_exit_status == 0)
+			g_exit_status = 1;
+		else if (!had_invalid)
+			g_exit_status = 0;
 	}
 	while (wait(NULL) > 0)
 		;

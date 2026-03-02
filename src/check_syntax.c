@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 21:00:17 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/28 18:36:50 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/01 18:41:07 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	redirect_syntax(t_token *tmp)
 			syntax_error_message(NULL, NULL, 2);
 		return (1);
 	}
+	return (0);
 }
 
 int	check_syntax(t_token	*tokens)

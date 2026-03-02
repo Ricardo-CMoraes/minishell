@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/13 00:50:47 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/28 22:40:11 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/01 18:40:09 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	warning_message(char *delimiter)
 static void	read_heredoc_lines(int fd, char *delimiter)
 {
 	char	*line;
-	int		dlmt_len;
+	size_t	dlmt_len;
 
 	dlmt_len = ft_strlen(delimiter);
 	while (1)
@@ -58,7 +58,6 @@ static void	read_heredoc_lines(int fd, char *delimiter)
 void	handle_heredoc_creation(t_token *dlmt_token, int index)
 {
 	char	*temp_name;
-	char	*line;
 	int		temp_fd;
 	int		stdin_backup;
 

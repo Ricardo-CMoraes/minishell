@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/01 18:38:03 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/03 23:17:08 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void		free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr);
 //lexer.c
 void		add_token(t_token *new_token, t_token **head, int *i);
 void		handler_redirection(char *input, t_token **head, int *i);
-void		handle_word(char *input, t_token **head, int *i);
+int			handle_word(char *input, t_token **head, int *i);
 t_token		*lexer(char *input);
 
 //expander.c

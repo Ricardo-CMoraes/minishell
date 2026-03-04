@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/28 17:33:03 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/28 17:34:05 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/04 00:39:40 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	handle_sigint(int sig)
 {
 	(void)sig;
-	printf("\n");
+	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -26,7 +26,7 @@ void	handle_sigint_heredoc(int sig)
 {
 	(void)sig;
 	g_exit_status = 130;
-	printf("\n");
+	write(1, "\n", 1);
 	close(0);
 }
 

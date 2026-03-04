@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -g -Wall -Wextra -Ilibft -Iincludes
+CFLAGS = -g -Wall -Wextra -Werror -Ilibft -Iincludes
 
 SRC = src/main.c \
 		src/lexer.c \

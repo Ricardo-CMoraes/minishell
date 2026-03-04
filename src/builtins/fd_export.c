@@ -11,17 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <unistd.h>
-
-static int	env_count(char **envp)
-{
-	int	i;
-
-	i = 0;
-	while (envp && envp[i])
-		i++;
-	return (i);
-}
 
 static int	env_cmp(const char *a, const char *b)
 {
@@ -31,7 +20,11 @@ static int	env_cmp(const char *a, const char *b)
 
 	la = ft_strlen(a);
 	lb = ft_strlen(b);
-	n = (la > lb ? la : lb) + 1;
+	if (la > lb)
+		n = la;
+	else
+		n = lb;
+	n = n + 1;
 	return (ft_strncmp(a, b, n));
 }
 
@@ -52,26 +45,12 @@ static void	print_export_entry(char *entry, int fd_out)
 	ft_putendl_fd("\"", fd_out);
 }
 
-static void	print_export(char **envp, int fd_out)
+static void	sort_env(char **sorted, int count)
 {
 	int		i;
 	int		j;
-	int		count;
-	char	**sorted;
 	char	*tmp;
 
-	count = env_count(envp);
-	if (count == 0)
-		return ;
-	sorted = malloc(sizeof(char *) * count);
-	if (!sorted)
-		return ;
-	i = 0;
-	while (i < count)
-	{
-		sorted[i] = envp[i];
-		i++;
-	}
 	i = 0;
 	while (i < count - 1)
 	{
@@ -88,28 +67,37 @@ static void	print_export(char **envp, int fd_out)
 		}
 		i++;
 	}
+}
+
+static void	print_export(char **envp, int fd_out)
+{
+	int		i;
+	int		count;
+	char	**sorted;
+
+	count = env_size(envp);
+	if (count == 0)
+		return ;
+	sorted = malloc(sizeof(char *) * count);
+	if (!sorted)
+		return ;
 	i = 0;
 	while (i < count)
 	{
-		print_export_entry(sorted[i], fd_out);
+		sorted[i] = envp[i];
 		i++;
 	}
+	sort_env(sorted, count);
+	i = 0;
+	while (i < count)
+		print_export_entry(sorted[i++], fd_out);
 	free(sorted);
-}
-
-static void	print_export_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: `", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putendl_fd("': not a valid identifier", 2);
 }
 
 int	fd_export(char **args, char ***envp, int fd_out)
 {
-	int		i;
-	int		status;
-	char	*eq;
-	char	*key;
+	int	i;
+	int	status;
 
 	if (!args || !envp)
 		return (1);
@@ -121,23 +109,6 @@ int	fd_export(char **args, char ***envp, int fd_out)
 	status = 0;
 	i = 1;
 	while (args[i])
-	{
-		eq = ft_strchr(args[i], '=');
-		if (eq)
-			key = ft_substr(args[i], 0, eq - args[i]);
-		else
-			key = ft_strdup(args[i]);
-		if (!key || !env_is_valid_name(key))
-		{
-			print_export_error(args[i]);
-			status = 1;
-		}
-		else if (eq)
-			env_set(envp, key, eq + 1);
-		else
-			env_set(envp, key, NULL);
-		free(key);
-		i++;
-	}
+		status |= process_export_arg(args[i++], envp);
 	return (status);
 }

@@ -70,6 +70,24 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }	t_cmd;
 
+typedef struct s_exec_ctx
+{
+	t_cmd	*cmds;
+	t_cmd	*current;
+	pid_t	last_pid;
+	int		executed_any;
+	int		had_invalid;
+	char	***envp;
+}	t_exec_ctx;
+
+typedef struct s_cd_ctx
+{
+	char	***envp;
+	char	*path;
+	int		print_path;
+	int		fd_out;
+}	t_cd_ctx;
+
 //libft/libft.c
 size_t		ft_strlen(const char *str);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -83,7 +101,6 @@ int			update_state(char c, int state);
 char		*clean_quotes(char *str);
 void		free_arr(char **array);
 void		free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr);
-
 
 //lexer.c
 void		add_token(t_token *new_token, t_token **head, int *i);
@@ -103,7 +120,7 @@ void		prepare_to_split(char *var_value, int state);
 char		*ft_getenv(char *name, char **env);
 
 // retokenizer.c
-void	retokenizer(t_token **tokens, t_token *prev);
+void		retokenizer(t_token **tokens, t_token *prev);
 void		split_and_relink(t_token *token);
 
 //remove_quotes.c
@@ -112,7 +129,7 @@ void		remove_quotes(t_token *tokens);
 
 //build_commands
 char		**fill_args(t_token **tokens, t_cmd *new_node);
-t_cmd	*build_commands(t_token *tokens, t_cmd *head);
+t_cmd		*build_commands(t_token *tokens, t_cmd *head);
 
 //build_commands_utils.c
 t_cmd		*create_cmd_node(void);
@@ -141,6 +158,24 @@ int			process_all_heredocs(t_token *tokens);
 int			env_size(char **envp);
 char		**copy_environment(char **envp);
 
+//executor_helpers.c
+int			handle_cmd_not_found(t_cmd *cmd);
+void		setup_pipeline_signals(void);
+void		restore_signals_and_wait(void);
+int			process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp);
+int			process_cmd_loop(t_exec_ctx *ctx);
+
+//executor_utils.c
+void		apply_redirections(t_cmd *cmd);
+void		child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
+pid_t		create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
+
+//executor_pipeline.c
+void		handle_pipeline_status(int status, int executed_any,
+				int had_invalid);
+void		close_and_reset_fds(t_cmd *cmd);
+void		close_other_fds(t_cmd *cmds, t_cmd *current);
+
 //executor.c
 int			execute_cmd(t_cmd *cmd, char **envp);
 void		execute_pipeline(t_cmd *cmds, char ***envp);
@@ -153,14 +188,19 @@ int			fd_env(char **envp, int fd_out);
 int			fd_pwd(int fd_out);
 int			fd_cd(char **args, char ***envp, int fd_out);
 int			fd_export(char **args, char ***envp, int fd_out);
+int			process_export_arg(char *arg, char ***envp);
 int			fd_unset(char **args, char ***envp);
 int			fd_exit(char **args);
 
 //env utils
+int			env_is_valid_name(const char *name);
+int			env_find(char **envp, const char *key);
+char		*build_env_entry(const char *key, const char *value);
 char		**env_dup(char **envp);
+
+//env operations
 int			env_set(char ***envp, const char *key, const char *value);
 int			env_unset(char **envp, const char *key);
-int			env_is_valid_name(const char *name);
 
 //path.c
 char		*get_dir(char *path, char *cmd);
@@ -175,6 +215,10 @@ int			pipe_syntax(t_token *tmp);
 int			redirect_syntax(t_token *tmp);
 int			check_syntax(t_token	*tokens);
 
-int	process_input(t_token **tokens, t_cmd **cmds,t_setup *envp);
+int			process_input(t_token **tokens, t_cmd **cmds, t_setup *envp);
+
+//memory_utils.c
+void		free_arr(char **array);
+void		free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr);
 
 #endif

@@ -19,10 +19,16 @@ SRC = src/main.c \
 		src/builtins/fd_pwd.c \
 		src/builtins/fd_cd.c \
 		src/builtins/fd_export.c \
+		src/builtins/fd_export_helper.c \
 		src/builtins/fd_unset.c \
 		src/builtins/fd_exit.c \
 		src/builtins/env_utils.c \
+		src/builtins/env_operations.c \
 		src/executor.c \
+		src/executor_helpers.c \
+		src/executor_utils.c \
+		src/executor_pipeline.c \
+		src/memory_utils.c \
 		src/path.c \
 		src/handle_errors.c \
 		src/here_doc.c \

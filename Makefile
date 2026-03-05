@@ -28,7 +28,8 @@ SRC = src/main.c \
 		src/here_doc.c \
 		src/copy_environment.c \
 		src/handle_signal.c \
-		src/check_syntax.c
+		src/check_syntax.c \
+		src/lexer_utils.c
 
 OBJ = $(SRC:.c=.o)
 

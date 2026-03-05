@@ -6,11 +6,23 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/25 15:25:19 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/01/25 23:29:05 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/04 20:37:14 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	update_state(char c, int state)
+{
+	if (c == '\'' && state == OUT_QUOTE)
+		state = IN_SQUOTE;
+	else if (c == '\"' && state == OUT_QUOTE)
+		state = IN_DQUOTE;
+	else if ((c == '\'' && state == IN_SQUOTE)
+		|| (c == '\"' && state == IN_DQUOTE))
+		state = OUT_QUOTE;
+	return (state);
+}
 
 char	*extract_var_name(char *str)
 {

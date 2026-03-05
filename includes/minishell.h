@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/03 23:17:08 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/04 21:26:59 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int			update_state(char c, int state);
 char		*clean_quotes(char *str);
 void		free_arr(char **array);
 void		free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr);
+void		apply_terminal_settings(void);
 
 
 //lexer.c

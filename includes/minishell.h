@@ -169,6 +169,7 @@ int			process_cmd_loop(t_exec_ctx *ctx);
 void		apply_redirections(t_cmd *cmd);
 void		child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
 pid_t		create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
+void		handle_execve_error(char *cmd_name, char *path, int status);
 
 //executor_pipeline.c
 void		handle_pipeline_status(int status, int executed_any,

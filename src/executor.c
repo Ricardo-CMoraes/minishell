@@ -59,9 +59,7 @@ static int	fork_and_execute(t_cmd *cmd, char *path, char **envp)
 	{
 		apply_redirections(cmd);
 		execve(path, cmd->args, envp);
-		perror("execve");
-		free(path);
-		exit(127);
+		handle_execve_error(cmd->args[0], path, 126);
 	}
 	free(path);
 	waitpid(pid, &status, 0);

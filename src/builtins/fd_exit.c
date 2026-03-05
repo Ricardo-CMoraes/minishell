@@ -44,9 +44,38 @@ static void	print_exit_error(char *msg, char *arg)
 	ft_putendl_fd(msg, 2);
 }
 
+static int	is_overflow(char *s)
+{
+	int		i;
+	int		neg;
+	long	n;
+	long	digit;
+
+	i = 0;
+	neg = 0;
+	n = 0;
+	if (s[i] == '+' || s[i] == '-')
+	{
+		if (s[i] == '-')
+			neg = 1;
+		i++;
+	}
+	while (s[i])
+	{
+		digit = s[i] - '0';
+		if (neg == 0 && n > (9223372036854775807 - digit) / 10)
+			return (1);
+		if (neg == 1 && n > (9223372036854775808UL) / 10)
+			return (1);
+		n = n * 10 + digit;
+		i++;
+	}
+	return (0);
+}
+
 int	fd_exit(char **args)
 {
-	int	status;
+	long	n;
 
 	write(2, "exit\n", 5);
 	if (!args || !args[1])
@@ -54,14 +83,18 @@ int	fd_exit(char **args)
 	if (!is_numeric(args[1]))
 	{
 		print_exit_error("numeric argument required", args[1]);
-		exit(2);
+		exit(255);
 	}
 	if (args[2])
 	{
 		print_exit_error("too many arguments", NULL);
 		return (1);
 	}
-	status = ft_atoi(args[1]) & 255;
-	exit(status);
-	return (status);
+	if (is_overflow(args[1]))
+	{
+		print_exit_error("numeric argument required", args[1]);
+		exit(255);
+	}
+	n = ft_atoi(args[1]);
+	exit((int)(n & 255));
 }

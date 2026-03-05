@@ -47,9 +47,25 @@ void	child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)
 		exit(127);
 	}
 	execve(path, cmd->args, *envp);
-	perror("execve");
-	free(path);
-	exit(126);
+	handle_execve_error(cmd->args[0], path, 126);
+}
+
+void	handle_execve_error(char *cmd_name, char *path, int default_status)
+{
+	if (errno == ENOENT)
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd_name, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		free(path);
+		exit(127);
+	}
+	else
+	{
+		perror("execve");
+		free(path);
+		exit(default_status);
+	}
 }
 
 pid_t	create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)

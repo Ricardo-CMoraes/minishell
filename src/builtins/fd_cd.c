@@ -58,12 +58,36 @@ static char	*get_target_path(char **args, char **envp, int *print_path)
 	return (ft_strdup(args[1]));
 }
 
-int	fd_cd(char **args, char ***envp, int fd_out)
+static int	do_chdir(char **args, t_cd_ctx *ctx)
 {
-	char	*path;
 	char	*oldpwd;
 	char	*cwd;
-	int		print_path;
+
+	oldpwd = getcwd(NULL, 0);
+	if (!oldpwd)
+		oldpwd = ft_getenv("PWD", *ctx->envp);
+	if (chdir(ctx->path) != 0)
+	{
+		print_cd_errno(args[1]);
+		free(oldpwd);
+		return (1);
+	}
+	cwd = getcwd(NULL, 0);
+	if (oldpwd)
+		env_set(ctx->envp, "OLDPWD", oldpwd);
+	if (cwd)
+		env_set(ctx->envp, "PWD", cwd);
+	if (ctx->print_path && ctx->fd_out >= 0)
+		ft_putendl_fd(ctx->path, ctx->fd_out);
+	free(oldpwd);
+	free(cwd);
+	return (0);
+}
+
+int	fd_cd(char **args, char ***envp, int fd_out)
+{
+	t_cd_ctx	ctx;
+	int			status;
 
 	if (!args || !envp)
 		return (1);
@@ -72,28 +96,12 @@ int	fd_cd(char **args, char ***envp, int fd_out)
 		print_cd_error("too many arguments");
 		return (1);
 	}
-	path = get_target_path(args, *envp, &print_path);
-	if (!path)
+	ctx.envp = envp;
+	ctx.path = get_target_path(args, *envp, &ctx.print_path);
+	ctx.fd_out = fd_out;
+	if (!ctx.path)
 		return (1);
-	oldpwd = getcwd(NULL, 0);
-	if (!oldpwd)
-		oldpwd = ft_getenv("PWD", *envp);
-	if (chdir(path) != 0)
-	{
-		print_cd_errno(args[1]);
-		free(path);
-		free(oldpwd);
-		return (1);
-	}
-	cwd = getcwd(NULL, 0);
-	if (oldpwd)
-		env_set(envp, "OLDPWD", oldpwd);
-	if (cwd)
-		env_set(envp, "PWD", cwd);
-	if (print_path && fd_out >= 0)
-		ft_putendl_fd(path, fd_out);
-	free(oldpwd);
-	free(cwd);
-	free(path);
-	return (0);
+	status = do_chdir(args, &ctx);
+	free(ctx.path);
+	return (status);
 }

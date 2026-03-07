@@ -12,17 +12,7 @@
 
 #include "minishell.h"
 
-static int	env_count(char **envp)
-{
-	int	i;
-
-	i = 0;
-	while (envp && envp[i])
-		i++;
-	return (i);
-}
-
-static int	env_find(char **envp, const char *key)
+int	env_find(char **envp, const char *key)
 {
 	int		i;
 	size_t	len;
@@ -40,7 +30,7 @@ static int	env_find(char **envp, const char *key)
 	return (-1);
 }
 
-static char	*build_env_entry(const char *key, const char *value)
+char	*build_env_entry(const char *key, const char *value)
 {
 	char	*tmp;
 	char	*entry;
@@ -73,6 +63,16 @@ int	env_is_valid_name(const char *name)
 	return (1);
 }
 
+static void	env_dup_cleanup(char **copy, int i)
+{
+	while (i > 0)
+	{
+		free(copy[i - 1]);
+		i--;
+	}
+	free(copy);
+}
+
 char	**env_dup(char **envp)
 {
 	int		i;
@@ -81,7 +81,7 @@ char	**env_dup(char **envp)
 
 	if (!envp)
 		return (NULL);
-	count = env_count(envp);
+	count = env_size(envp);
 	copy = malloc(sizeof(char *) * (count + 1));
 	if (!copy)
 		return (NULL);
@@ -91,92 +91,11 @@ char	**env_dup(char **envp)
 		copy[i] = ft_strdup(envp[i]);
 		if (!copy[i])
 		{
-			while (i > 0)
-			{
-				free(copy[i - 1]);
-				i--;
-			}
-			free(copy);
+			env_dup_cleanup(copy, i);
 			return (NULL);
 		}
 		i++;
 	}
 	copy[count] = NULL;
 	return (copy);
-}
-
-int	env_set(char ***envp, const char *key, const char *value)
-{
-	int		idx;
-	int		count;
-	char	*entry;
-	char	**new_envp;
-
-	if (!envp || !key)
-		return (1);
-	if (!*envp)
-	{
-		new_envp = malloc(sizeof(char *) * 2);
-		if (!new_envp)
-			return (1);
-		entry = build_env_entry(key, value);
-		if (!entry)
-		{
-			free(new_envp);
-			return (1);
-		}
-		new_envp[0] = entry;
-		new_envp[1] = NULL;
-		*envp = new_envp;
-		return (0);
-	}
-	idx = env_find(*envp, key);
-	if (idx >= 0 && !value)
-		return (0);
-	entry = build_env_entry(key, value);
-	if (!entry)
-		return (1);
-	if (idx >= 0)
-	{
-		free((*envp)[idx]);
-		(*envp)[idx] = entry;
-		return (0);
-	}
-	count = env_count(*envp);
-	new_envp = malloc(sizeof(char *) * (count + 2));
-	if (!new_envp)
-	{
-		free(entry);
-		return (1);
-	}
-	idx = 0;
-	while (idx < count)
-	{
-		new_envp[idx] = (*envp)[idx];
-		idx++;
-	}
-	new_envp[count] = entry;
-	new_envp[count + 1] = NULL;
-	free(*envp);
-	*envp = new_envp;
-	return (0);
-}
-
-int	env_unset(char **envp, const char *key)
-{
-	int	idx;
-
-	if (!envp || !key)
-		return (0);
-	idx = env_find(envp, key);
-	if (idx < 0)
-		return (0);
-	free(envp[idx]);
-	while (envp[idx + 1])
-	{
-		envp[idx] = envp[idx + 1];
-		idx++;
-	}
-	envp[idx] = NULL;
-	return (0);
 }

@@ -14,7 +14,7 @@
 
 int	g_exit_status = 0;
 
-int	process_input(t_token **tokens, t_cmd **cmds,t_setup *envp)
+int	process_input(t_token **tokens, t_cmd **cmds, t_setup *envp)
 {
 	char	*input;
 

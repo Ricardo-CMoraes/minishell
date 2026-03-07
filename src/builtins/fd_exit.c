@@ -65,7 +65,7 @@ static int	is_overflow(char *s)
 		digit = s[i] - '0';
 		if (neg == 0 && n > (9223372036854775807 - digit) / 10)
 			return (1);
-		if (neg == 1 && n > (9223372036854775808UL) / 10)
+		if (neg == 1 && n > (long)(9223372036854775808UL) / 10)
 			return (1);
 		n = n * 10 + digit;
 		i++;

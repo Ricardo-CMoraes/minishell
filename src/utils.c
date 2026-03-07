@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 13:06:57 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/01/29 23:12:10 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/02/28 22:53:06 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ t_token	*create_token(char *value, t_token_type type)
 	node->value = value;
 	node->type = type;
 	node->next = NULL;
+	node->hdoc_file = NULL;
 	return (node);
 }
 
@@ -33,20 +34,6 @@ int	is_space(char c)
 int	is_operator(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
-}
-
-void	free_tokens(t_token *head)
-{
-	t_token	*temp;
-
-	while (head)
-	{
-		temp = head->next;
-		if (head->value)
-			free(head->value);
-		free(head);
-		head = temp;
-	}
 }
 
 int	update_state(char c, int state)
@@ -61,17 +48,18 @@ int	update_state(char c, int state)
 	return (state);
 }
 
-void	free_arr(char **array)
+void	free_tokens(t_token *head)
 {
-	int	i;
+	t_token	*temp;
 
-	if (!array)
-		return ;
-	i = 0;
-	while(array[i])
+	while (head)
 	{
-		free(array[i]);
-		i++;
+		temp = head->next;
+		if (head->value)
+			free(head->value);
+		if (head->hdoc_file)
+			free(head->hdoc_file);
+		free(head);
+		head = temp;
 	}
-	free(array);
 }

@@ -6,84 +6,69 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/01 23:12:20 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/01 18:37:47 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void print_commands(t_cmd *head)
-{
-    int i;
-    int cmd_count = 0;
+int	g_exit_status = 0;
 
-    while (head)
-    {
-        printf("\n--- COMANDO %d ---\n", ++cmd_count);
-        printf("FD IN: %d\n", head->fd_in);
-        printf("FD OUT: %d\n", head->fd_out);
-        i = 0;
-        while (head->args && head->args[i])
-        {
-            printf("Arg[%d]: %s\n", i, head->args[i]);
-            i++;
-        }
-        head = head->next;
-    }
+int	process_input(t_token **tokens, t_cmd **cmds, t_setup *envp)
+{
+	char	*input;
+
+	setup_signals();
+	input = readline("minishell > ");
+	if (!input)
+		return (-1);
+	if (!*input)
+	{
+		free(input);
+		return (0);
+	}
+	add_history(input);
+	*tokens = lexer(input);
+	free(input);
+	if (check_syntax(*tokens) || process_all_heredocs(*tokens))
+		return (0);
+	expander(*tokens, *envp);
+	retokenizer(tokens, NULL);
+	remove_quotes(*tokens);
+	*cmds = build_commands(*tokens, NULL);
+	return (1);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*input;
 	t_token	*tokens;
 	t_setup	env;
-	t_token	*temp;
 	t_cmd	*cmds;
+	int		process_status;
 
 	(void)argc;
 	(void)argv;
-	env.envp = envp;
+	env.envp = copy_environment(envp);
 	while (1)
 	{
-		input = readline("minishell > ");
-		if (!input)
+		tokens = NULL;
+		cmds = NULL;
+		process_status = process_input(&tokens, &cmds, &env);
+		if (process_status == -1)
 		{
-			printf("exit\n");
+			ft_putendl_fd("exit", 1);
 			break ;
 		}
-		if (strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break ;
-		}
-		tokens = lexer(input);
-		expander(tokens, env);
-		retokenizer(&tokens);
-		remove_quotes(tokens);
-		printf("\n---APÓS REMOVER QUOTES---\n");
-		temp = tokens;
-		while (temp)
-		{
-			printf("Value: %s\tType: %d\n", temp->value, temp->type);
-			temp = temp->next;
-		}
-		cmds = build_commands(tokens);
-		print_commands(cmds);
-		//free_commands(cmds);
-		free_tokens(tokens);
-		free(input);
+		if (process_status == 1 && cmds)
+			execute_pipeline(cmds, &env.envp);
+		unlink_heredocs(tokens);
+		free_all(NULL, tokens, cmds, NULL);
 	}
+	free_all(NULL, NULL, NULL, env.envp);
 	return (0);
 }
 
-
 // TO DO
-// 1. implementar handle redirections
-// 2. incluir free do cmds
-// 3. 
-// 4. 
-//
-//
-//
-//
-//
+// 1. Testar regua da 42
+// 2. Escrever rascunho do README.md
+// 3. Consertar bugs

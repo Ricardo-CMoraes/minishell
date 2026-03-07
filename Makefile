@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -g -Wall -Wextra -Werror -Ilibft -Iincludes
+CFLAGS = -g -Wall -Wextra -Ilibft -Iincludes
 
 SRC = src/main.c \
 		src/lexer.c \
@@ -12,7 +12,29 @@ SRC = src/main.c \
 		src/remove_quotes.c \
 		src/build_commands.c \
 		src/build_commands_utils.c \
-		src/handle_redirections.c
+		src/handle_redirections.c \
+		src/builtins/builtins.c \
+		src/builtins/fd_echo.c \
+		src/builtins/fd_env.c \
+		src/builtins/fd_pwd.c \
+		src/builtins/fd_cd.c \
+		src/builtins/fd_export.c \
+		src/builtins/fd_export_helper.c \
+		src/builtins/fd_unset.c \
+		src/builtins/fd_exit.c \
+		src/builtins/env_utils.c \
+		src/builtins/env_operations.c \
+		src/executor.c \
+		src/executor_helpers.c \
+		src/executor_utils.c \
+		src/executor_pipeline.c \
+		src/memory_utils.c \
+		src/path.c \
+		src/handle_errors.c \
+		src/here_doc.c \
+		src/copy_environment.c \
+		src/handle_signal.c \
+		src/check_syntax.c
 
 OBJ = $(SRC:.c=.o)
 

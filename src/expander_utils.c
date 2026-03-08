@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/25 15:25:19 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/04 20:37:14 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:18:45 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ char	*extract_var_name(char *str)
 	int	len;
 
 	len = 0;
+	if (ft_isdigit(str[len]))
+		return (ft_substr(str, 0, 1));
 	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
 		len++;
 	return (ft_substr(str, 0, len));
@@ -60,6 +62,8 @@ char	*ft_getenv(char *name, char **env)
 	if (!name || !env)
 		return (NULL);
 	len = ft_strlen(name);
+	if (ft_strncmp(name, "0", 1) == 0)
+		return (ft_strdup("minishell"));
 	while (env[i])
 	{
 		if (ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=')

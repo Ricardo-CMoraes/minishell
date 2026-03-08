@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/04 21:26:46 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:27:24 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ int	process_input(t_token **tokens, t_cmd **cmds, t_setup *envp)
 	add_history(input);
 	*tokens = lexer(input);
 	free(input);
-	if ((*tokens == NULL) || check_syntax(*tokens) || process_all_heredocs(*tokens))
+	if ((*tokens == NULL) || check_syntax(*tokens)
+		|| process_all_heredocs(*tokens))
 		return (0);
 	expander(*tokens, *envp);
 	retokenizer(tokens, NULL);

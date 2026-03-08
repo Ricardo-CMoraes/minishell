@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:45:52 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/03 23:29:27 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:31:42 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,8 @@ int	handle_word(char *input, t_token **head, int *i)
 	end = get_word_end(input, *i, &state);
 	if (state != OUT_QUOTE)
 	{
-		ft_putstr_fd("minishell: syntax error: unexpected EOF while looking for matching\n", 2);
+		ft_putstr_fd("minishell: syntax error: ", 2);
+		ft_putstr_fd("unexpected EOF while looking for matching\n", 2);
 		g_exit_status = 2;
 		return (0);
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   memory_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnovais <jnovais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 09:19:57 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/03 09:19:57 by jnovais          ###   ########.fr       */
+/*   Updated: 2026/03/08 00:27:50 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr)
 	if (cmds)
 		free_commands(cmds);
 	if (arr)
-		free_arr(arr); // Sua função que limpa char ** (env ou similares)
+		free_arr(arr);
 	if (input)
 		free(input);
 }

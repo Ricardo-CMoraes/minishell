@@ -6,15 +6,15 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:53:16 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/08 00:27:24 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 01:57:58 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	g_exit_status = 0;
+int	g_exit_status;
 
-int	process_input(t_token **tokens, t_cmd **cmds, t_setup *envp)
+int	process_input(t_token **tokens, t_cmd **cmds, t_setup *env)
 {
 	char	*input;
 
@@ -33,7 +33,7 @@ int	process_input(t_token **tokens, t_cmd **cmds, t_setup *envp)
 	if ((*tokens == NULL) || check_syntax(*tokens)
 		|| process_all_heredocs(*tokens))
 		return (0);
-	expander(*tokens, *envp);
+	expander(*tokens, *env);
 	retokenizer(tokens, NULL);
 	remove_quotes(*tokens);
 	*cmds = build_commands(*tokens, NULL);
@@ -45,31 +45,28 @@ int	main(int argc, char **argv, char **envp)
 	t_token	*tokens;
 	t_setup	env;
 	t_cmd	*cmds;
-	int		process_status;
 
-	(void)argc;
-	(void)argv;
-	env.envp = copy_environment(envp);
+	if (argc > 1)
+		return (write(2, "Error: Minishell does not accept arguments\n", 44));
+	set_env_struct(&env, envp, argv[0]);
 	while (1)
 	{
-		tokens = NULL;
-		cmds = NULL;
-		process_status = process_input(&tokens, &cmds, &env);
-		if (process_status == -1)
+		set_null(&tokens, &cmds);
+		env.input_status = process_input(&tokens, &cmds, &env);
+		if (env.input_status == -1)
 		{
 			ft_putendl_fd("exit", 1);
 			break ;
 		}
-		if (process_status == 1 && cmds)
+		if (env.input_status == 1 && cmds)
 			execute_pipeline(cmds, &env.envp);
 		unlink_heredocs(tokens);
 		free_all(NULL, tokens, cmds, NULL);
 	}
-	free_all(NULL, NULL, NULL, env.envp);
+	free_all(env.shell_name, NULL, NULL, env.envp);
 	return (0);
 }
 
 // TO DO
 // 1. Testar regua da 42
 // 2. Escrever rascunho do README.md
-// 3. Consertar bugs

@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 13:06:57 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/06 21:47:43 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/06 22:25:05 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,4 @@ void	free_tokens(t_token *head)
 		free(head);
 		head = temp;
 	}
-}
-
-void	free_arr(char **array)
-{
-	int	i;
-
-	if (!array)
-		return ;
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-}
-
-void	free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr)
-{
-	if (tokens)
-		free_tokens(tokens);
-	if (cmds)
-		free_commands(cmds);
-	if (arr)
-		free_arr(arr); // Sua função que limpa char ** (env ou similares)
-	if (input)
-		free(input);
 }

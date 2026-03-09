@@ -8,20 +8,20 @@ Naquela época, todos os desenvolvedores concordavam que se comunicar com um com
 
 Era lógico que eles tivessem a ideia de criar um software para se comunicar com um computador usando linhas de comando interativas em uma linguagem um tanto próxima da linguagem humana.
 
-O **Minishell** é uma versão simplificado do bash original que nós permite viajar no tempo e experimentar os desafios que os desenvolvedores enfrentaram antes da existência do Windows. Um projeto onde fomos desafiados a reproduzir comportamentos básicos do shell, ler comandos da entrada padrão, parseá-los e executá-los corretamente, lidando com processos filhos, redirecionamentos e pipes.
+O **Minishell** é uma versão simplificado do bash original que nos permite viajar no tempo e experimentar os desafios que os desenvolvedores enfrentaram antes da existência do Windows. Um projeto no qual fomos desafiados a reproduzir comportamentos básicos do shell, ler comandos da entrada padrão, parseá-los e executá-los corretamente, lidando com processos filhos, redirecionamentos e pipes.
 
 ### Overview
 
-Divimos o projeto em duas grandes partes o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por...[jnovais].
+Dividimos o projeto em duas grandes partes: o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por...[jnovais].
 
 ### Parsing
-O Parsing por sua ver foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
+O Parsing, por sua ver, foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
 
-***Lexer***: Transforma a linha de comando em uma lista de "Tokens" (palavras, pipes, redirecionamentos).
-***Expander***: Substitui variáveis de ambiente (como `$USER` ou `$?`) pelos seus valores reais, respeitando as aspas.
-***Splitter***: Divide os tokens em unidades lógicas de execução.
-***Quote Removal***: Remove as aspas desnecessárias (' ou ") após a interpretação do conteúdo.
-***Parser***: Organiza tudo em uma estrutura de comandos pronta para ser executada.
+* ***Lexer***: transforma a linha de comando em uma lista de "Tokens" (palavras, pipes, redirecionamentos).
+* ***Expander***: substitui variáveis de ambiente (como `$USER` ou `$?`) pelos seus valores reais, respeitando as aspas.
+* ***Splitter***: divide os tokens em unidades lógicas de execução.
+* ***Quote Removal***: remove as aspas desnecessárias (' ou ") após a interpretação do conteúdo.
+* ***Parser***: organiza tudo em uma estrutura de comandos pronta para ser executada.
 
 
 ### Executor
@@ -68,11 +68,11 @@ Conforme os requisitos do projeto, o Minishell não aceita argumentos na sua ini
 ### Como IA foi usada
 Neste projeto, a Inteligência Artificial (Gemini 3 Flash e a [jnovais]) foi integrada como uma ferramenta central de aceleração de aprendizado e suporte à decisão técnica. O uso da IA focou em quatro pilares fundamentais:
 
-* ***Agilidade no Aprendizado e Depuração***: Utilizei a IA para antecipar e diagnosticar erros complexos de lógica (como falhas de expansão de variáveis, falhas na interpreteção de sinais) que, em um cenário de desenvolvimento isolado, exigiriam um tempo maior de depuração, permitindo um foco maior na compreensão da solução.
-* ***Análise de Trade-offs e Pontos de Vista***: A IA foi consultada para oferecer múltiplas perspectivas sobre a mesma funcionalidade, permitindo comparar diferentes abordagens arquiteturais (como o uso de listas encadeadas vs. matrizes para o ambiente) sem a necessidade de implementação prévia de cada uma.
-* ***Otimização do Desenvolvimento***: Ao simular o comportamento de diferentes abordagens, foi possível economizar tempo de desenvolvimento e focar na implementação da solução que melhor se adequava aos requisitos do projeto e às normas da 42.
-* ***Validação de Casos de Borda***: Em tarefas críticas como o Parsing e a Gestão de Sinais, a IA serviu como um "peer reviewer" para validar se a lógica implementada (ex: precedência de dígitos no $1USER e status de saída 131) estava em conformidade com o padrão POSIX.
-* ***Geração de Casos de Teste (QA)***: A IA foi utilizada para gerar combinações complexas de comandos e casos de borda (edge cases) para testes comparativos com o Bash original. Isso permitiu estressar o parser e o executor com sequências de redirecionamentos, aspas aninhadas e expansões de variáveis que garantiram a robustez do programa.
+* ***Agilidade no Aprendizado e Depuração***: utilizei a IA para antecipar e diagnosticar erros complexos de lógica (como falhas de expansão de variáveis, falhas na interpreteção de sinais) que, em um cenário de desenvolvimento isolado, exigiriam um tempo maior de depuração, permitindo um foco maior na compreensão da solução.
+* ***Análise de Trade-offs e Pontos de Vista***: a IA foi consultada para oferecer múltiplas perspectivas sobre a mesma funcionalidade, permitindo comparar diferentes abordagens arquiteturais (como o uso de listas encadeadas vs. matrizes para o ambiente) sem a necessidade de implementação prévia de cada uma.
+* ***Otimização do Desenvolvimento***: ao simular o comportamento de diferentes abordagens, foi possível economizar tempo de desenvolvimento e focar na implementação da solução que melhor se adequava aos requisitos do projeto e às normas da 42.
+* ***Validação de Casos de Borda***: em tarefas críticas como o Parsing e a Gestão de Sinais, a IA serviu como um "peer reviewer" para validar se a lógica implementada (ex: precedência de dígitos no $1USER e status de saída 131) estava em conformidade com o padrão POSIX.
+* ***Geração de Casos de Teste (QA)***: a IA foi utilizada para gerar combinações complexas de comandos e casos de borda (edge cases) para testes comparativos com o Bash original. Isso permitiu estressar o parser e o executor com sequências de redirecionamentos, aspas aninhadas e expansões de variáveis que garantiram a robustez do programa.
 
 ## Chalanges
 

@@ -1,23 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer_utils.c                                      :+:      :+:    :+:   */
+/*   memory_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/04 20:36:08 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/04 20:36:36 by rida-cos         ###   ########.fr       */
+/*   Created: 2026/03/03 09:19:57 by jnovais           #+#    #+#             */
+/*   Updated: 2026/03/08 00:27:50 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_space(char c)
+void	free_arr(char **array)
 {
-	return (c == ' ' || (c >= 9 && c <= 13));
+	int	i;
+
+	if (!array)
+		return ;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }
 
-int	is_operator(char c)
+void	free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr)
 {
-	return (c == '|' || c == '<' || c == '>');
+	if (tokens)
+		free_tokens(tokens);
+	if (cmds)
+		free_commands(cmds);
+	if (arr)
+		free_arr(arr);
+	if (input)
+		free(input);
 }

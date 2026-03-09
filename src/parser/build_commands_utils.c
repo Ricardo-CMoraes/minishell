@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 21:26:29 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/13 00:35:28 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:29:04 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ void	free_commands(t_cmd *cmds)
 	while (cmds)
 	{
 		tmp = cmds->next;
-		// 1. Limpa a matriz de argumentos
 		if (cmds->args)
 		{
 			i = 0;
@@ -94,12 +93,10 @@ void	free_commands(t_cmd *cmds)
 				free(cmds->args[i++]);
 			free(cmds->args);
 		}
-		// 2. Fecha FDs se foram abertos (diferente do padrão 0 e 1)
 		if (cmds->fd_in != 0)
 			close(cmds->fd_in);
 		if (cmds->fd_out != 1)
 			close(cmds->fd_out);
-		// 3. Limpa o nó
 		free(cmds);
 		cmds = tmp;
 	}

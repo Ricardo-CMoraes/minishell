@@ -1,6 +1,6 @@
 #### *Este projeto foi criado como parte do currículo da 42 por jnovais, rida-cos*.
 
-## Description
+# Description
 
 Shells existem desde o início da TI.
 
@@ -27,7 +27,7 @@ O Parsing, por sua ver, foi dividido em 5 diferentes partes: ***Lexer***, ***Exp
 ### Executor
 [jnovais]
 
-## Instructions
+# Instructions
 
 Esta seção descreve como preparar o ambiente, compilar e executar o Minishell.
 
@@ -58,7 +58,7 @@ Conforme os requisitos do projeto, o Minishell não aceita argumentos na sua ini
 * Correto: `./minishell`
 * Incorreto: `./minishell script.sh` (O programa exibirá uma mensagem de erro e encerrará).
 
-## Resourses
+# Resourses
 
 1. **[The Open Gourp Base Specifications Issue](https://pubs.opengroup.org/onlinepubs/9699919799/functions/contents.html)**: Aqui é possível encontrar informações sobre diversos comandos basicos do C.
 2. **[CodeVault](https://www.youtube.com/@CodeVault)**: Um canal no YouTube que explica muito bem funções básicas do C, como aplicar e cuidados a tomar.
@@ -74,9 +74,39 @@ Neste projeto, a Inteligência Artificial (Gemini 3 Flash e a [jnovais]) foi int
 * ***Validação de Casos de Borda***: em tarefas críticas como o Parsing e a Gestão de Sinais, a IA serviu como um "peer reviewer" para validar se a lógica implementada (ex: precedência de dígitos no $1USER e status de saída 131) estava em conformidade com o padrão POSIX.
 * ***Geração de Casos de Teste (QA)***: a IA foi utilizada para gerar combinações complexas de comandos e casos de borda (edge cases) para testes comparativos com o Bash original. Isso permitiu estressar o parser e o executor com sequências de redirecionamentos, aspas aninhadas e expansões de variáveis que garantiram a robustez do programa.
 
-## Chalanges
+# Challenges
 
-* lista linkada ou Arvore
+## Lista Encadeada VS Árvore Binária
+
+### 1. Lista Encadeada (Linked List)
+
+Como o Minishell básico só exige pipes lineares (cmd1 | cmd2 | cmd3), uma lista é perfeitamente capaz de representar essa sequência.
+
+* **Vantagens**:
+    * **Simplicidade**: muito mais fácil de iterar e dar free.
+    * **Linearidade**: casa perfeitamente com o loop de execução onde você faz um fork e passa o pipe para o próximo comando.
+    * **Menos Leaks**: o gerenciamento de memória em listas encadeadas é menos propenso a erros que em estruturas recursivas.
+
+* **Desvantagens**:
+    * **Limitada**: se você decidir fazer o bônus de **Operadores Lógicos** (`&&` e `||`) ou **Parênteses**, a lista se torna um pesadelo de lógica, pois ela não representa bem a precedência de execução.
+
+### 2. Árvore Binária (Abstract Syntax Tree - AST)
+
+Geralmente usada por quem quer implementar o bônus completo com parênteses e operadores lógicos.
+
+* **Vantagens**:
+
+    * **Precedência**: a árvore resolve naturalmente a ordem de execução. O que está mais "fundo" na árvore (folhas) é executado primeiro.
+
+    * **Escalabilidade**: é como o Bash real funciona. Se você quiser adicionar comandos complexos no futuro, a estrutura já está pronta.
+
+* **Desvantagens**:
+
+    * **Complexidade de Parsing**: criar a árvore exige um parser muito mais sofisticado (recursivo).
+
+    * **Execução Complexa**: precisa de funções recursivas para percorrer a árvore e gerenciar os pipes entre os nós.
+
+
 * Crtl+C
 * HERE_DOC
 * Status Quote - Falar sobre o comportamento das aspas

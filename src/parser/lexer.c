@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:45:52 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/01 20:38:39 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/08 00:31:42 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static int	get_word_end(char *input, int i, t_state *state)
 	return (i);
 }
 
-void	handle_word(char *input, t_token **head, int *i)
+int	handle_word(char *input, t_token **head, int *i)
 {
 	int		start;
 	int		end;
@@ -88,14 +88,15 @@ void	handle_word(char *input, t_token **head, int *i)
 	end = get_word_end(input, *i, &state);
 	if (state != OUT_QUOTE)
 	{
-		printf("Error: open quotes\n");
-		free_tokens(*head);
-		*head = NULL;
-		return ;
+		ft_putstr_fd("minishell: syntax error: ", 2);
+		ft_putstr_fd("unexpected EOF while looking for matching\n", 2);
+		g_exit_status = 2;
+		return (0);
 	}
 	add_token(create_token(
 			ft_substr(input, start, end - start), WORD), head, NULL);
 	*i = end;
+	return (1);
 }
 
 t_token	*lexer(char *input)
@@ -115,8 +116,11 @@ t_token	*lexer(char *input)
 			add_token(create_token(ft_strdup("|"), PIPE), &head, &i);
 		else if (input[i] == '<' || input[i] == '>')
 			handler_redirection(input, &head, &i);
-		else
-			handle_word(input, &head, &i);
+		else if (!handle_word(input, &head, &i))
+		{
+			free_all(NULL, head, NULL, NULL);
+			return (NULL);
+		}
 	}
 	return (head);
 }

@@ -179,6 +179,7 @@ void		handle_redirections(t_cmd *node, t_token **tokens);
 void		handle_sigint(int sig);
 void		setup_signals(void);
 void		handle_sigint_heredoc(int sig);
+void		handle_sigquit(int sig);
 
 //src/parser/here_doc.c
 char		*generate_tmp_filename(int index);

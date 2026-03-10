@@ -83,7 +83,7 @@ pid_t	create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		signal(SIGQUIT, handle_sigquit);
 		child_process(cmd, cmds, envp);
 	}
 	return (pid);

@@ -6,7 +6,7 @@ Shells existem desde o início da TI.
 
 Naquela época, todos os desenvolvedores concordavam que se comunicar com um computador via interruptores de entrada/saída alinhados era extremamente frustrante.
 
-Era lógico que eles tivessem a ideia de criar um software para se comunicar com um computador usando linhas de comando interativas em uma linguagem um tanto próxima da linguagem humana.
+Era natural que eles tivessem a ideia de criar um software para se comunicar com um computador usando linhas de comando interativas em uma linguagem um tanto próxima da linguagem humana.
 
 O **Minishell** é uma versão simplificado do bash original que nos permite viajar no tempo e experimentar os desafios que os desenvolvedores enfrentaram antes da existência do Windows. Um projeto no qual fomos desafiados a reproduzir comportamentos básicos do shell, ler comandos da entrada padrão, parseá-los e executá-los corretamente, lidando com processos filhos, redirecionamentos e pipes.
 
@@ -15,7 +15,7 @@ O **Minishell** é uma versão simplificado do bash original que nos permite via
 Dividimos o projeto em duas grandes partes: o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por...[jnovais].
 
 ### Parsing
-O Parsing, por sua ver, foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
+O Parsing, por sua vez, foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
 
 * ***Lexer***: transforma a linha de comando em uma lista de "Tokens" (palavras, pipes, redirecionamentos).
 * ***Expander***: substitui variáveis de ambiente (como `$USER` ou `$?`) pelos seus valores reais, respeitando as aspas.

@@ -30,6 +30,14 @@ void	handle_sigint_heredoc(int sig)
 	close(0);
 }
 
+void	handle_sigquit(int sig)
+{
+	(void)sig;
+	write(2, "Quit (core dumped)\n", 19);
+	g_exit_status = 131;
+	exit(131);
+}
+
 void	setup_signals(void)
 {
 	signal(SIGINT, handle_sigint);

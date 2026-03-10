@@ -21,6 +21,8 @@ void	handle_pipeline_status(int status, int executed_any, int had_invalid)
 		g_exit_status = 128 + WTERMSIG(status);
 		if (g_exit_status == 130)
 			write(1, "\n", 1);
+		else if (g_exit_status == 131)
+			write(1, "Quit (core dumped)\n", 19); //Ajuste feito
 	}
 	else if (!executed_any)
 	{

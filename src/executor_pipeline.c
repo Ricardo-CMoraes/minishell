@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_pipeline.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnovais <jnovais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:33:45 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/03 11:33:45 by jnovais          ###   ########.fr       */
+/*   Updated: 2026/03/11 01:10:23 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	handle_pipeline_status(int status, int executed_any, int had_invalid)
 		if (g_exit_status == 130)
 			write(1, "\n", 1);
 		else if (g_exit_status == 131)
-			write(1, "Quit (core dumped)\n", 19); //Ajuste feito
+			write(1, "Quit (core dumped)\n", 19);
 	}
 	else if (!executed_any)
 	{

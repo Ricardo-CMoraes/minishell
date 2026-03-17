@@ -12,7 +12,7 @@ O **Minishell** é uma versão simplificado do bash original que nos permite via
 
 ### Overview
 
-Dividimos o projeto em duas grandes partes: o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por...[jnovais].
+Dividimos o projeto em duas grandes partes: o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por executar os comandos já estruturados pelo parser, aplicando redirecionamentos e pipes, criando processos filhos quando necessário, executando builtins, e por atualizar o `g_exit_status` seguindo o comportamento do bash.
 
 ### Parsing
 O Parsing, por sua vez, foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
@@ -25,7 +25,46 @@ O Parsing, por sua vez, foi dividido em 5 diferentes partes: ***Lexer***, ***Exp
 
 
 ### Executor
-[jnovais]
+O Executor recebe uma lista encadeada de comandos (`t_cmd`) já pronta (com `args`, `fd_in`, `fd_out`, e flags como `invalid`) e decide como executar cada comando.
+
+De forma geral, ele cobre:
+
+1. **Comando único** (`execute_cmd`)
+   - Valida o nó (`invalid`, `args`, etc.).
+   - Resolve o path do executável via `find_cmd_path`.
+   - Faz `fork()` e no filho executa:
+     - `apply_redirections` para conectar `fd_in`/`fd_out` em `STDIN_FILENO`/`STDOUT_FILENO` via `dup2`.
+     - `execve`.
+   - No pai faz `waitpid` e atualiza `g_exit_status`.
+   - Tratamento de erros segue o padrão:
+     - **127**: comando inexistente (`command not found` / `ENOENT`).
+     - **126**: falha ao executar (ex: permissão / `execve` falhou por outro motivo).
+
+2. **Pipeline** (`execute_pipeline`)
+   - Percorre a lista `t_cmd` em loop (usando um contexto `t_exec_ctx` para manter estado: comando atual, `last_pid`, flags, `envp`).
+   - Para cada comando:
+     - Se o nó estiver inválido, fecha e reseta FDs (`close_and_reset_fds`) e continua.
+     - Se for um builtin e **não houver pipeline** (apenas 1 comando), executa no processo pai (`execute_builtin`) para permitir efeitos colaterais (ex: `cd`, `export`, `unset`) e depois fecha FDs.
+     - Caso contrário, cria um processo filho (`create_child_process`). No filho:
+       - Fecha FDs que não pertencem ao comando (`close_other_fds`).
+       - Aplica redirecionamentos (`apply_redirections`).
+       - Executa builtin (se for o caso) ou chama `execve`.
+   - Após iniciar os processos, o pai:
+     - Aguarda o último comando do pipeline (`waitpid(last_pid, ...)`) e usa `handle_pipeline_status` para definir o `g_exit_status` final.
+     - Aguarda os demais filhos (`restore_signals_and_wait`).
+
+3. **Sinais (Ctrl+C / Ctrl+\\)**
+   - Durante a execução de pipelines, o processo pai ignora `SIGINT` e `SIGQUIT` para não “matar” o prompt.
+   - Os filhos usam comportamento padrão para sinais (ex.: `SIGQUIT` causa status **131**).
+   - O status final é convertido para o padrão do shell: `128 + sinal`.
+     - Exemplo: `SIGINT` => 130, `SIGQUIT` => 131.
+   - Para manter o comportamento visível do bash, quando o último processo termina por `SIGQUIT`, imprimimos `Quit (core dumped)`.
+
+4. **Arquitetura de arquivos (referência rápida)**
+   - `src/executor.c`: entrada principal (`execute_cmd`, `execute_pipeline`) e helpers locais de wait/status para comando único.
+   - `src/executor_helpers.c`: loop de execução do pipeline e utilitários de controle do fluxo.
+   - `src/executor_utils.c`: utilitários de execução no filho (redirecionamentos, `execve`, tratamento de erro).
+   - `src/executor_pipeline.c`: helpers de pipeline (fechamento de FDs de outros comandos, reset de FDs, status final do pipeline).
 
 # Instructions
 
@@ -66,7 +105,7 @@ Conforme os requisitos do projeto, o Minishell não aceita argumentos na sua ini
 4. **Bash**: Utilizado como a principal referência de comportamento esperado para expansões e redirecionamentos.
 
 ### Como IA foi usada
-Neste projeto, a Inteligência Artificial (Gemini 3 Flash e a [jnovais]) foi integrada como uma ferramenta central de aceleração de aprendizado e suporte à decisão técnica. O uso da IA focou em quatro pilares fundamentais:
+Neste projeto, a Inteligência Artificial (Gemini 3 Flash e a Claude Code) foi integrada como uma ferramenta central de aceleração de aprendizado e suporte à decisão técnica. O uso da IA focou em quatro pilares fundamentais:
 
 * ***Agilidade no Aprendizado e Depuração***: utilizei a IA para antecipar e diagnosticar erros complexos de lógica (como falhas de expansão de variáveis, falhas na interpreteção de sinais) que, em um cenário de desenvolvimento isolado, exigiriam um tempo maior de depuração, permitindo um foco maior na compreensão da solução.
 * ***Análise de Trade-offs e Pontos de Vista***: a IA foi consultada para oferecer múltiplas perspectivas sobre a mesma funcionalidade, permitindo comparar diferentes abordagens arquiteturais (como o uso de listas encadeadas vs. matrizes para o ambiente) sem a necessidade de implementação prévia de cada uma.

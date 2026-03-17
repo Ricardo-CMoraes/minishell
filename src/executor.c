@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:38:02 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/17 01:50:09 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 02:50:18 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 	last = cmds;
 	while (last && last->next)
 		last = last->next;
-	wait_and_handle_status(ctx.last_pid, ctx.executed_any, (last && last->invalid));
+	wait_and_handle_status(ctx.last_pid, ctx.executed_any,
+		(last && last->invalid));
 	restore_signals_and_wait();
 }

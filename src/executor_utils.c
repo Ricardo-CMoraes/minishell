@@ -6,12 +6,11 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:38:02 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/17 02:18:44 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 02:49:57 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 void	apply_redirections(t_cmd *cmd)
 {
@@ -30,13 +29,13 @@ void	apply_redirections(t_cmd *cmd)
 void	child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)
 {
 	char	*path;
-	
+
 	close_other_fds(cmds, cmd);
 	if (cmd->invalid)
-    {
+	{
 		close_and_reset_fds(cmd);
-        exit(1); 
-    }
+		exit(1);
+	}
 	apply_redirections(cmd);
 	if (is_builtin(cmd->args[0]))
 	{
@@ -67,8 +66,8 @@ static void	err_exit(char *cmd, char *msg, char *path, int status)
 
 void	handle_execve_error(char *cmd_name, char *path, int default_status)
 {
-	struct stat path_stat;
-	
+	struct stat	path_stat;
+
 	if (path && stat(path, &path_stat) == 0 && S_ISDIR(path_stat.st_mode))
 		err_exit(cmd_name, ": Is a directory\n", path, 126);
 	if (errno == EACCES)

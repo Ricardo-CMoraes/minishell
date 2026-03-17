@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 22:39:58 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/11 01:37:07 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 00:51:07 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	open_output_file(t_cmd *node, char *filename, t_token_type type)
 {
 	int	fd;
 
+	if (node && node->invalid)
+        return ;
 	if (type == RED_OUT)
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else
@@ -38,7 +40,9 @@ void	open_output_file(t_cmd *node, char *filename, t_token_type type)
 void	open_input_file(t_cmd *node, char *path, t_token_type type)
 {
 	int	fd;
-
+	
+	if (node && node->invalid)
+        return ;
 	fd = open(path, O_RDONLY);
 	if (fd == -1)
 		set_error(path, node, 1);

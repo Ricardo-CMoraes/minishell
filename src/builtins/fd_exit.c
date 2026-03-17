@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fd_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnovais <jnovais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 20:50:00 by jnovais           #+#    #+#             */
-/*   Updated: 2026/02/04 20:50:00 by jnovais          ###   ########.fr       */
+/*   Updated: 2026/03/17 02:29:00 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,30 +46,30 @@ static void	print_exit_error(char *msg, char *arg)
 
 static int	is_overflow(char *s)
 {
-	int		i;
+	int		len;
 	int		neg;
-	long	n;
-	long	digit;
+	char	*max;
 
-	i = 0;
 	neg = 0;
-	n = 0;
-	if (s[i] == '+' || s[i] == '-')
+	if (*s == '+' || *s == '-')
 	{
-		if (s[i] == '-')
+		if (*s == '-')
 			neg = 1;
-		i++;
+		s++;
 	}
-	while (s[i])
-	{
-		digit = s[i] - '0';
-		if (neg == 0 && n > (9223372036854775807 - digit) / 10)
-			return (1);
-		if (neg == 1 && n > (long)(9223372036854775808UL) / 10)
-			return (1);
-		n = n * 10 + digit;
-		i++;
-	}
+	while (*s == '0' && *(s + 1))
+		s++;
+	len = ft_strlen(s);
+	if (len > 19)
+		return (1);
+	if (len < 19)
+		return (0);
+	if (neg)
+		max = "9223372036854775808";
+	else
+		max = "9223372036854775807";
+	if (ft_strncmp(s, max, 19) > 0)
+		return (1);
 	return (0);
 }
 
@@ -77,23 +77,18 @@ int	fd_exit(char **args)
 {
 	long	n;
 
-	write(2, "exit\n", 5);
+	ft_putstr_fd("exit\n", 1);
 	if (!args || !args[1])
 		exit(0);
-	if (!is_numeric(args[1]))
+	if (!is_numeric(args[1]) || is_overflow(args[1]))
 	{
 		print_exit_error("numeric argument required", args[1]);
-		exit(255);
+		exit(2);
 	}
 	if (args[2])
 	{
 		print_exit_error("too many arguments", NULL);
 		return (1);
-	}
-	if (is_overflow(args[1]))
-	{
-		print_exit_error("numeric argument required", args[1]);
-		exit(255);
 	}
 	n = ft_atoi(args[1]);
 	exit((int)(n & 255));

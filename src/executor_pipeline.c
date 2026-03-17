@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 11:33:45 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/11 01:10:23 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 01:38:11 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,11 @@
 
 void	handle_pipeline_status(int status, int executed_any, int had_invalid)
 {
+	if (had_invalid)
+	{
+		g_exit_status = 1;
+		return ;
+	}
 	if (WIFEXITED(status))
 		g_exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
@@ -25,12 +30,7 @@ void	handle_pipeline_status(int status, int executed_any, int had_invalid)
 			write(1, "Quit (core dumped)\n", 19);
 	}
 	else if (!executed_any)
-	{
-		if (had_invalid && g_exit_status == 0)
-			g_exit_status = 1;
-		else if (!had_invalid)
-			g_exit_status = 0;
-	}
+		g_exit_status = 0;
 }
 
 void	close_and_reset_fds(t_cmd *cmd)

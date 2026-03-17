@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 20:57:22 by jnovais           #+#    #+#             */
-/*   Updated: 2026/02/13 00:45:40 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/16 22:53:37 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,7 @@ char	*find_cmd_path(char *cmd, char **envp)
 		i++;
 	}
 	if (!path)
-	{
 		return (NULL);
-	}
 	result = get_dir(path, cmd);
 	return (result);
 }

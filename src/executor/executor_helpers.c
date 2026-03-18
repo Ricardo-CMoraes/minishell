@@ -34,7 +34,7 @@ void	restore_signals_and_wait(void)
 	setup_signals();
 }
 
-int	process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp)
+static int	process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp)
 {
 	if (!cmds->next && is_builtin(cmd->args[0]))
 	{

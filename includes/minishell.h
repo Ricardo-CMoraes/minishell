@@ -100,7 +100,6 @@ int			execute_builtin(t_cmd *cmd, char ***envp);
 
 //src/builtins/env_operations.c
 int			env_set(char ***envp, const char *key, const char *value);
-int			env_unset(char **envp, const char *key);
 
 //src/builtins/env_utils.c
 int			env_find(char **envp, const char *key);
@@ -136,7 +135,6 @@ int			fd_unset(char **args, char ***envp);
 int			handle_cmd_not_found(t_cmd *cmd);
 void		setup_pipeline_signals(void);
 void		restore_signals_and_wait(void);
-int			process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp);
 int			process_cmd_loop(t_exec_ctx *ctx);
 
 //src/executor/executor_pipeline.c
@@ -147,7 +145,6 @@ void		close_other_fds(t_cmd *cmds, t_cmd *current);
 
 //src/executor/executor_utils.c
 void		apply_redirections(t_cmd *cmd);
-void		child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
 void		handle_execve_error(char *cmd_name, char *path, int status);
 pid_t		create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
 

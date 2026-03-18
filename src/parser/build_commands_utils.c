@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/01 21:26:29 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/08 00:29:04 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/11 01:13:28 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,7 @@ int	count_args(t_token *tokens)
 	{
 		if (is_redirect(tokens->type))
 		{
-			// Pula operador
 			tokens = tokens->next;
-			// Pula o nome do arquivo
 			if (tokens)
 				tokens = tokens->next;
 		}

@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:45:52 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/08 00:31:42 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/11 01:38:01 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,16 @@ void	handler_redirection(char *input, t_token **head, int *i)
 {
 	if (input[*i] == '>')
 	{
-		if (input[*i + 1] == '>') // is a APPEND
+		if (input[*i + 1] == '>')
 			add_token(create_token(ft_strdup(">>"), APPEND), head, i);
-		else //RED_OUT
+		else
 			add_token(create_token(ft_strdup(">"), RED_OUT), head, i);
 	}
 	else if (input[*i] == '<')
 	{
-		if (input[*i + 1] == '<') // is a HRE_DOC
+		if (input[*i + 1] == '<')
 			add_token(create_token(ft_strdup("<<"), HERE_DOC), head, i);
-		else //RED_IN
+		else
 			add_token(create_token(ft_strdup("<"), RED_IN), head, i);
 	}
 }

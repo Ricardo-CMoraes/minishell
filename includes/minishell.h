@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/08 02:41:05 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/18 00:41:21 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@
 # include <string.h>
 # include <errno.h>
 # include <unistd.h>
-# include <stdlib.h>
-# include <sys/wait.h>
 # include <signal.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -132,6 +132,33 @@ int			fd_pwd(int fd_out);
 //src/builtins/fd_unset.c
 int			fd_unset(char **args, char ***envp);
 
+//src/executor/executor_helpers.c
+int			handle_cmd_not_found(t_cmd *cmd);
+void		setup_pipeline_signals(void);
+void		restore_signals_and_wait(void);
+int			process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp);
+int			process_cmd_loop(t_exec_ctx *ctx);
+
+//src/executor/executor_pipeline.c
+void		handle_pipeline_status(int status, int executed_any,
+				int had_invalid);
+void		close_and_reset_fds(t_cmd *cmd);
+void		close_other_fds(t_cmd *cmds, t_cmd *current);
+
+//src/executor/executor_utils.c
+void		apply_redirections(t_cmd *cmd);
+void		child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
+void		handle_execve_error(char *cmd_name, char *path, int status);
+pid_t		create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
+
+//src/executor/executor.c
+int			execute_cmd(t_cmd *cmd, char **envp);
+void		execute_pipeline(t_cmd *cmds, char ***envp);
+
+//src/executorpath.c
+char		*get_dir(char *path, char *cmd);
+char		*find_cmd_path(char *cmd, char **envp);
+
 //src/parser/build_commands_utils.c
 t_cmd		*create_cmd_node(void);
 void		add_cmd(t_cmd *new_node, t_cmd **head);
@@ -207,43 +234,13 @@ void		remove_quotes(t_token *tokens);
 void		retokenizer(t_token **tokens, t_token *prev);
 void		split_and_relink(t_token *token);
 
-//executor_helpers.c
-int			handle_cmd_not_found(t_cmd *cmd);
-void		setup_pipeline_signals(void);
-void		restore_signals_and_wait(void);
-int			process_single_builtin(t_cmd *cmd, t_cmd *cmds, char ***envp);
-int			process_cmd_loop(t_exec_ctx *ctx);
-
-//executor_pipeline.c
-void		handle_pipeline_status(int status, int executed_any,
-				int had_invalid);
-void		close_and_reset_fds(t_cmd *cmd);
-void		close_other_fds(t_cmd *cmds, t_cmd *current);
-
-//executor_utils.c
-void		apply_redirections(t_cmd *cmd);
-void		child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
-void		handle_execve_error(char *cmd_name, char *path, int status);
-pid_t		create_child_process(t_cmd *cmd, t_cmd *cmds, char ***envp);
-
-//executor.c
-int			execute_cmd(t_cmd *cmd, char **envp);
-void		execute_pipeline(t_cmd *cmds, char ***envp);
-
 //src/main.c
 int			process_input(t_token **tokens, t_cmd **cmds, t_setup *envp);
-
-//src/path.c
-char		*get_dir(char *path, char *cmd);
-char		*find_cmd_path(char *cmd, char **envp);
 
 //src/utils.c
 t_token		*create_token(char *value, t_token_type type);
 void		free_tokens(t_token *head);
 void		set_null(t_token **tokens, t_cmd **cmds);
 void		set_env_struct(t_setup *env, char **envp, char *shell_name);
-
-//char		*clean_quotes(char *str);
-//void		apply_terminal_settings(void);
 
 #endif

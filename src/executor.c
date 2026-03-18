@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:38:02 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/08 02:36:21 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 02:50:18 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ int	execute_cmd(t_cmd *cmd, char **envp)
 void	execute_pipeline(t_cmd *cmds, char ***envp)
 {
 	t_exec_ctx	ctx;
+	t_cmd		*last;
 
 	ctx.cmds = cmds;
 	ctx.current = cmds;
@@ -94,6 +95,10 @@ void	execute_pipeline(t_cmd *cmds, char ***envp)
 	ctx.envp = envp;
 	setup_pipeline_signals();
 	process_cmd_loop(&ctx);
-	wait_and_handle_status(ctx.last_pid, ctx.executed_any, ctx.had_invalid);
+	last = cmds;
+	while (last && last->next)
+		last = last->next;
+	wait_and_handle_status(ctx.last_pid, ctx.executed_any,
+		(last && last->invalid));
 	restore_signals_and_wait();
 }

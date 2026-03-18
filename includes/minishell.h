@@ -6,7 +6,7 @@
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 12:37:09 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/03/08 02:41:05 by rida-cos         ###   ########.fr       */
+/*   Updated: 2026/03/17 02:08:55 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@
 # include <errno.h>
 # include <unistd.h>
 # include <stdlib.h>
-# include <sys/wait.h>
 # include <signal.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
 # include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -242,8 +243,5 @@ t_token		*create_token(char *value, t_token_type type);
 void		free_tokens(t_token *head);
 void		set_null(t_token **tokens, t_cmd **cmds);
 void		set_env_struct(t_setup *env, char **envp, char *shell_name);
-
-//char		*clean_quotes(char *str);
-//void		apply_terminal_settings(void);
 
 #endif

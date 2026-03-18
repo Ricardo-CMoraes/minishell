@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_helpers.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnovais <jnovais@student.42.fr>            +#+  +:+       +#+        */
+/*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 23:38:02 by jnovais           #+#    #+#             */
-/*   Updated: 2026/03/02 23:01:32 by jnovais          ###   ########.fr       */
+/*   Updated: 2026/03/17 01:59:29 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ int	process_cmd_loop(t_exec_ctx *ctx)
 			|| !ctx->current->args[0])
 		{
 			close_and_reset_fds(ctx->current);
-			if (ctx->current->invalid)
-				ctx->had_invalid = 1;
 			ctx->current = ctx->current->next;
 			continue ;
 		}

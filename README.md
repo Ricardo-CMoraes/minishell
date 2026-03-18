@@ -1,166 +1,160 @@
-#### *Este projeto foi criado como parte do currículo da 42 por jnovais, rida-cos*.
+*This project was created as part of the 42 curriculum by jnovais and rida-cos*.
 
 # Description
 
-Shells existem desde o início da TI.
+Shells have existed since the beginning of IT.
 
-Naquela época, todos os desenvolvedores concordavam que se comunicar com um computador via interruptores de entrada/saída alinhados era extremamente frustrante.
+Back then, developers agreed that communicating with a computer via aligned input/output switches was extremely frustrating.
 
-Era natural que eles tivessem a ideia de criar um software para se comunicar com um computador usando linhas de comando interativas em uma linguagem um tanto próxima da linguagem humana.
+It was only natural that they came up with the idea of creating software to communicate with a computer using interactive command lines in a language somewhat close to human language.
 
-O **Minishell** é uma versão simplificado do bash original que nos permite viajar no tempo e experimentar os desafios que os desenvolvedores enfrentaram antes da existência do Windows. Um projeto no qual fomos desafiados a reproduzir comportamentos básicos do shell, ler comandos da entrada padrão, parseá-los e executá-los corretamente, lidando com processos filhos, redirecionamentos e pipes.
+**Minishell** is a simplified version of the original Bash that allows us to travel back in time and experience the challenges developers faced before Windows existed. It is a project where we were challenged to reproduce basic shell behaviors: reading commands from standard input, parsing them, and executing them correctly while handling child processes, redirections, and pipes.
 
 ### Overview
 
-Dividimos o projeto em duas grandes partes: o ***Parsing*** e o ***Executor***. O primeiro fica encarregado de tratar a entrada do dado desde o input do usuário até entregar no formato adequado para ser consumido pelo Executor. O segundo é responsável por executar os comandos já estruturados pelo parser, aplicando redirecionamentos e pipes, criando processos filhos quando necessário, executando builtins, e por atualizar o `g_exit_status` seguindo o comportamento do bash.
+We divided the project into two major parts: **Parsing** and the **Executor**. The first is responsible for processing data from the user input until it is delivered in the appropriate format to be consumed by the Executor. The second is responsible for executing the structured commands, applying redirections and pipes, creating child processes when necessary, executing built-ins, and updating `g_exit_status` following Bash behavior.
 
 ### Parsing
-O Parsing, por sua vez, foi dividido em 5 diferentes partes: ***Lexer***, ***Expander***, ***Splitter***, ***Quote Removal***, e o prórpio ***Parser***.
+Parsing was divided into 5 different parts: **Lexer**, **Expander**, **Splitter**, **Quote Removal**, and the **Parser** itself.
 
-* ***Lexer***: transforma a linha de comando em uma lista de "Tokens" (palavras, pipes, redirecionamentos).
-* ***Expander***: substitui variáveis de ambiente (como `$USER` ou `$?`) pelos seus valores reais, respeitando as aspas.
-* ***Splitter***: divide os tokens em unidades lógicas de execução.
-* ***Quote Removal***: remove as aspas desnecessárias (' ou ") após a interpretação do conteúdo.
-* ***Parser***: organiza tudo em uma estrutura de comandos pronta para ser executada.
-
+* **Lexer**: Transforms the command line into a list of "Tokens" (words, pipes, redirections).
+* **Expander**: Replaces environment variables (such as `$USER` or `$?`) with their actual values, respecting quotes.
+* **Splitter**: Divides tokens into logical units of execution.
+* **Quote Removal**: Removes unnecessary quotes (' or ") after the content has been interpreted.
+* **Parser**: Organizes everything into a command structure ready to be executed.
 
 ### Executor
-O Executor recebe uma lista encadeada de comandos (`t_cmd`) já pronta (com `args`, `fd_in`, `fd_out`, e flags como `invalid`) e decide como executar cada comando.
+The Executor receives a linked list of commands (`t_cmd`) already prepared (with `args`, `fd_in`, `fd_out`, and flags like `invalid`) and decides how to execute each command.
 
-De forma geral, ele cobre:
+Generally, it covers:
 
-1. **Comando único** (`execute_cmd`)
-   - Valida o nó (`invalid`, `args`, etc.).
-   - Resolve o path do executável via `find_cmd_path`.
-   - Faz `fork()` e no filho executa:
-     - `apply_redirections` para conectar `fd_in`/`fd_out` em `STDIN_FILENO`/`STDOUT_FILENO` via `dup2`.
+1. **Single Command** (`execute_cmd`)
+   - Validates the node (`invalid`, `args`, etc.).
+   - Resolves the executable path via `find_cmd_path`.
+   - Performs a `fork()` and, in the child process, executes:
+     - `apply_redirections` to connect `fd_in`/`fd_out` to `STDIN_FILENO`/`STDOUT_FILENO` via `dup2`.
      - `execve`.
-   - No pai faz `waitpid` e atualiza `g_exit_status`.
-   - Tratamento de erros segue o padrão:
-     - **127**: comando inexistente (`command not found` / `ENOENT`).
-     - **126**: falha ao executar (ex: permissão / `execve` falhou por outro motivo).
+   - In the parent process, it calls `waitpid` and updates `g_exit_status`.
+   - Error handling follows the standard:
+     - **127**: Command not found (`command not found` / `ENOENT`).
+     - **126**: Failed to execute (e.g., permission / `execve` failed for another reason).
 
 2. **Pipeline** (`execute_pipeline`)
-   - Percorre a lista `t_cmd` em loop (usando um contexto `t_exec_ctx` para manter estado: comando atual, `last_pid`, flags, `envp`).
-   - Para cada comando:
-     - Se o nó estiver inválido, fecha e reseta FDs (`close_and_reset_fds`) e continua.
-     - Se for um builtin e **não houver pipeline** (apenas 1 comando), executa no processo pai (`execute_builtin`) para permitir efeitos colaterais (ex: `cd`, `export`, `unset`) e depois fecha FDs.
-     - Caso contrário, cria um processo filho (`create_child_process`). No filho:
-       - Fecha FDs que não pertencem ao comando (`close_other_fds`).
-       - Aplica redirecionamentos (`apply_redirections`).
-       - Executa builtin (se for o caso) ou chama `execve`.
-   - Após iniciar os processos, o pai:
-     - Aguarda o último comando do pipeline (`waitpid(last_pid, ...)`) e usa `handle_pipeline_status` para definir o `g_exit_status` final.
-     - Aguarda os demais filhos (`restore_signals_and_wait`).
+   - Iterates through the `t_cmd` list in a loop (using a context `t_exec_ctx` to maintain state: current command, `last_pid`, flags, `envp`).
+   - For each command:
+     - If the node is invalid, it closes and resets FDs (`close_and_reset_fds`) and continues.
+     - If it is a built-in and **there is no pipeline** (only 1 command), it executes in the parent process (`execute_builtin`) to allow side effects (e.g., `cd`, `export`, `unset`) and then closes FDs.
+     - Otherwise, it creates a child process (`create_child_process`). In the child:
+       - Closes FDs that do not belong to the command (`close_other_fds`).
+       - Applies redirections (`apply_redirections`).
+       - Executes the built-in (if applicable) or calls `execve`.
+   - After starting the processes, the parent:
+     - Waits for the last command of the pipeline (`waitpid(last_pid, ...)`) and uses `handle_pipeline_status` to define the final `g_exit_status`.
+     - Waits for the remaining children (`restore_signals_and_wait`).
 
-3. **Sinais (Ctrl+C / Ctrl+\\)**
-   - Durante a execução de pipelines, o processo pai ignora `SIGINT` e `SIGQUIT` para não “matar” o prompt.
-   - Os filhos usam comportamento padrão para sinais (ex.: `SIGQUIT` causa status **131**).
-   - O status final é convertido para o padrão do shell: `128 + sinal`.
-     - Exemplo: `SIGINT` => 130, `SIGQUIT` => 131.
-   - Para manter o comportamento visível do bash, quando o último processo termina por `SIGQUIT`, imprimimos `Quit (core dumped)`.
+3. **Signals (Ctrl+C / Ctrl+\\)**
+   - During pipeline execution, the parent process ignores `SIGINT` and `SIGQUIT` so as not to “kill” the prompt.
+   - Children use default signal behavior (e.g., `SIGQUIT` causes status **131**).
+   - The final status is converted to the shell standard: `128 + signal`.
+     - Example: `SIGINT` => 130, `SIGQUIT` => 131.
+   - To maintain Bash's visible behavior, when the last process terminates via `SIGQUIT`, we print `Quit (core dumped)`.
 
-4. **Arquitetura de arquivos (referência rápida)**
-   - `src/executor.c`: entrada principal (`execute_cmd`, `execute_pipeline`) e helpers locais de wait/status para comando único.
-   - `src/executor_helpers.c`: loop de execução do pipeline e utilitários de controle do fluxo.
-   - `src/executor_utils.c`: utilitários de execução no filho (redirecionamentos, `execve`, tratamento de erro).
-   - `src/executor_pipeline.c`: helpers de pipeline (fechamento de FDs de outros comandos, reset de FDs, status final do pipeline).
+4. **File Architecture (Quick Reference)**
+   - `src/executor.c`: Main entry point (`execute_cmd`, `execute_pipeline`) and local wait/status helpers.
+   - `src/executor_helpers.c`: Pipeline execution loop and flow control utilities.
+   - `src/executor_utils.c`: Child execution utilities (redirections, `execve`, error handling).
+   - `src/executor_pipeline.c`: Pipeline helpers (closing FDs of other commands, resetting FDs, final status).
 
 # Instructions
 
-Esta seção descreve como preparar o ambiente, compilar e executar o Minishell.
+This section describes how to prepare the environment, compile, and run Minishell.
 
 ### Pre-requisites
-O projeto depende da biblioteca GNU Readline. Caso não a tenha instalada (comum em ambientes Linux baseados em Debian/Ubuntu), execute:
+The project depends on the GNU Readline library. If you do not have it installed (common in Debian/Ubuntu-based Linux environments), run:
 ```bash
 sudo apt-get install libreadline-dev
 ```
 
-### Compilação
+### Compilation
 
-Utilize o Makefile incluído na raiz do repositório para compilar o executável:
+Use the included Makefile in the root of the repository to compile the executable:
 ```bash
 make
 ```
-* `make clean`: Remove os arquivos objetos (`*.o`).
-* `make fclean`: Remove os objetos e o executável final.
-* `make re`: Limpa e recompila todo o projeto.
+* `make clean`: Removes object files (`*.o`).
+* `make fclean`: Removes objects and the final executable.
+* `make re`: Cleans and recompiles the entire project.
 
-### Execução
-Após a compilação bem-sucedida, inicie o shell interativo:
+### Execution
+After successful compilation, start the interactive shell:
 ```bash
 ./minishell
 ```
-### Restrições de Uso
+### Usage Restrictions
 
-Conforme os requisitos do projeto, o Minishell não aceita argumentos na sua inicialização.
-* Correto: `./minishell`
-* Incorreto: `./minishell script.sh` (O programa exibirá uma mensagem de erro e encerrará).
+Per project requirements, Minishell does not accept arguments upon initialization.
+* Correct: `./minishell`
+* Incorrect: `./minishell script.sh` (The program will display an error message and exit).
 
-# Resourses
+# Resources
 
-1. **[The Open Gourp Base Specifications Issue](https://pubs.opengroup.org/onlinepubs/9699919799/functions/contents.html)**: Aqui é possível encontrar informações sobre diversos comandos basicos do C.
-2. **[CodeVault](https://www.youtube.com/@CodeVault)**: Um canal no YouTube que explica muito bem funções básicas do C, como aplicar e cuidados a tomar.
-3. **Man pages**: Consulta constante às definições de `execve(2)`, `sigaction(2)` e `dup2(2)`.
-4. **Bash**: Utilizado como a principal referência de comportamento esperado para expansões e redirecionamentos.
+1. **[The Open Group Base Specifications Issue](https://pubs.opengroup.org/onlinepubs/9699919799/functions/contents.html)**: Information on various basic C functions.
+2. **[CodeVault](https://www.youtube.com/@CodeVault)**: A YouTube channel that explains basic C functions and precautions.
+3. **Man pages**: Constant consultation of `execve(2)`, `sigaction(2)`, and `dup2(2)`.
+4. **Bash**: Used as the primary reference for expected behavior.
 
-### Como IA foi usada
-Neste projeto, a Inteligência Artificial (Gemini 3 Flash e a Claude Code) foi integrada como uma ferramenta central de aceleração de aprendizado e suporte à decisão técnica. O uso da IA focou em quatro pilares fundamentais:
+### How AI was used
+In this project, Artificial Intelligence (Gemini 3 Flash and Claude Code) was integrated as a central tool for learning acceleration and technical decision support. The use of AI focused on four fundamental pillars:
 
-* ***Agilidade no Aprendizado e Depuração***: utilizei a IA para antecipar e diagnosticar erros complexos de lógica (como falhas de expansão de variáveis, falhas na interpreteção de sinais) que, em um cenário de desenvolvimento isolado, exigiriam um tempo maior de depuração, permitindo um foco maior na compreensão da solução.
-* ***Análise de Trade-offs e Pontos de Vista***: a IA foi consultada para oferecer múltiplas perspectivas sobre a mesma funcionalidade, permitindo comparar diferentes abordagens arquiteturais (como o uso de listas encadeadas vs. matrizes para o ambiente) sem a necessidade de implementação prévia de cada uma.
-* ***Otimização do Desenvolvimento***: ao simular o comportamento de diferentes abordagens, foi possível economizar tempo de desenvolvimento e focar na implementação da solução que melhor se adequava aos requisitos do projeto e às normas da 42.
-* ***Validação de Casos de Borda***: em tarefas críticas como o Parsing e a Gestão de Sinais, a IA serviu como um "peer reviewer" para validar se a lógica implementada (ex: precedência de dígitos no $1USER e status de saída 131) estava em conformidade com o padrão POSIX.
-* ***Geração de Casos de Teste (QA)***: a IA foi utilizada para gerar combinações complexas de comandos e casos de borda (edge cases) para testes comparativos com o Bash original. Isso permitiu estressar o parser e o executor com sequências de redirecionamentos, aspas aninhadas e expansões de variáveis que garantiram a robustez do programa.
+* ***Agility in Learning and Debugging***: I used AI to anticipate and diagnose complex logic errors (such as variable expansion failures or signal interpretation issues) that would normally require more debugging time.
+* ***Analysis of Trade-offs and Perspectives***: AI was consulted to offer multiple perspectives on the same functionality, allowing for the comparison of different architectural approaches (such as linked lists vs. arrays).
+* ***Development Optimization***: By simulating different approaches, it was possible to save development time and focus on the solution that best fit the project requirements and 42 standards.
+* ***Edge Case Validation***: In critical tasks such as Parsing and Signal Management, the AI served as a "peer reviewer" to validate if the implemented logic complied with the POSIX standard.
+* ***Test Case Generation (QA)***: AI was used to generate complex combinations of commands and edge cases for comparative testing with the original Bash, ensuring the program's robustness.
 
 # Challenges
 
-## Lista Encadeada VS Árvore Binária
+## Linked List VS Binary Tree
 
-### 1. Lista Encadeada (Linked List)
+### 1. Linked List
 
-Como o Minishell básico só exige pipes lineares (cmd1 | cmd2 | cmd3), uma lista é perfeitamente capaz de representar essa sequência.
+Since basic Minishell only requires linear pipes (cmd1 | cmd2 | cmd3), a list is perfectly capable of representing this sequence.
 
-* **Vantagens**:
-    * **Simplicidade**: muito mais fácil de iterar e dar free.
-    * **Linearidade**: casa perfeitamente com o loop de execução onde você faz um fork e passa o pipe para o próximo comando.
-    * **Menos Leaks**: o gerenciamento de memória em listas encadeadas é menos propenso a erros que em estruturas recursivas.
+* **Advantages**:
+    * **Simplicity**: Much easier to iterate through and free memory.
+    * **Linearity**: Perfectly matches the execution loop where you fork and pass the pipe to the next command.
+    * **Fewer Leaks**: Memory management in linked lists is less prone to errors than in recursive structures.
 
-* **Desvantagens**:
-    * **Limitada**: se você decidir fazer o bônus de **Operadores Lógicos** (`&&` e `||`) ou **Parênteses**, a lista se torna um pesadelo de lógica, pois ela não representa bem a precedência de execução.
+* **Disadvantages**:
+    * **Limited**: If you decide to implement the bonus **Logical Operators** (`&&` and `||`) or **Parentheses**, the list becomes a logical nightmare regarding precedence.
 
-### 2. Árvore Binária (Abstract Syntax Tree - AST)
+### 2. Binary Tree (Abstract Syntax Tree - AST)
 
-Geralmente usada por quem quer implementar o bônus completo com parênteses e operadores lógicos.
+Generally used by those who want to implement the full bonus with parentheses and logical operators.
 
-* **Vantagens**:
+* **Advantages**:
+    * **Precedence**: The tree naturally resolves execution order; deeper nodes (leaves) are executed first.
+    * **Scalability**: This is how the real Bash works, making it easier to add complex commands later.
 
-    * **Precedência**: a árvore resolve naturalmente a ordem de execução. O que está mais "fundo" na árvore (folhas) é executado primeiro.
-
-    * **Escalabilidade**: é como o Bash real funciona. Se você quiser adicionar comandos complexos no futuro, a estrutura já está pronta.
-
-* **Desvantagens**:
-
-    * **Complexidade de Parsing**: criar a árvore exige um parser muito mais sofisticado (recursivo).
-
-    * **Execução Complexa**: precisa de funções recursivas para percorrer a árvore e gerenciar os pipes entre os nós.
+* **Disadvantages**:
+    * **Parsing Complexity**: Creating the tree requires a much more sophisticated recursive parser.
+    * **Complex Execution**: Requires recursive functions to traverse the tree and manage pipes between nodes.
 
 
-## Status Quote - Tratamento de Aspas
+## Quote Status - Handling Quotes
 
-Tratar as aspas foi um verdadeiro desafio. A lógica adotada foi criar uma espécie de status que ajudava a nos guiar e saber se o parser estava dentro ou fora de uma aspa e se ela era simples ou dupla. Algo que facilitou muito foi criar uma estrutura enum com os tipos `OUT_QUOTE`, `IN_SQUOTE` e `IN_DQUOTE`.
+Handling quotes was a true challenge. The logic adopted was to create a status to guide us and identify if the parser was inside or outside a quote, and whether it was single or double. Creating an `enum` structure with types `OUT_QUOTE`, `IN_SQUOTE`, and `IN_DQUOTE` made this much easier.
 
-### 1. Aspas Simples (`'`) - "O Literal Absoluto"
+### 1. Single Quotes (`'`) - "The Absolute Literal"
 
-As aspas simples são as mais rudes. Elas ignoram **tudo** o que está dentro delas. Nada é expandido, nada é interpretado.
-- **O que acontece:** `'$VAR'` será sempre a string literal `$`, `V`, `A`, `R`.
+Single quotes are the strictest; they ignore **everything** inside them. Nothing is expanded or interpreted.
+- **Result:** `'$VAR'` will always be the literal string `$`, `V`, `A`, `R`.
 
-### 2. Aspas Duplas (`"`) - "O Filtro Seletivo"
+### 2. Double Quotes (`"`) - "The Selective Filter"
 
-As aspas duplas protegem a string de ser dividida em múltiplos tokens (mantendo espaços), mas permitem que o cifrão (`$`) e a interrogação (`$?`) façam seu trabalho.
-- **O que acontece:** `"$VAR"` vira o valor da variável, mas se o valor for `ls -l`, ele continua sendo **um único token**.
+Double quotes protect the string from being split into multiple tokens (preserving spaces) but allow the dollar sign (`$`) and question mark (`$?`) to function.
+- **Result:** `"$VAR"` becomes the value of the variable, but if the value is `ls -l`, it remains **one single token**.
 
-Em outras palavras..
+In other words...
 
-As aspas simples (') preservam o valor literal de todos os caracteres, enquanto as aspas duplas (") preservam o valor literal de quase todos, exceto pelo cifrão ($), que ainda permite a expansão de variáveis, e pela manutenção da string como um único argumento.
-
+Single quotes (') preserve the literal value of all characters, while double quotes (") preserve the literal value of almost all characters, except for the dollar sign ($), which still allows for variable expansion, and the maintenance of the string as a single argument.

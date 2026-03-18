@@ -1,37 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   handle_signal.c                                    :+:      :+:    :+:   */
+/*   memory_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rida-cos <ric.costamoraes@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/28 17:33:03 by rida-cos          #+#    #+#             */
-/*   Updated: 2026/02/28 17:34:05 by rida-cos         ###   ########.fr       */
+/*   Created: 2026/03/03 09:19:57 by jnovais           #+#    #+#             */
+/*   Updated: 2026/03/08 00:27:50 by rida-cos         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	handle_sigint(int sig)
+void	free_arr(char **array)
 {
-	(void)sig;
-	printf("\n");
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	g_exit_status = 130;
+	int	i;
+
+	if (!array)
+		return ;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }
 
-void	handle_sigint_heredoc(int sig)
+void	free_all(char *input, t_token *tokens, t_cmd *cmds, char **arr)
 {
-	(void)sig;
-	g_exit_status = 130;
-	printf("\n");
-	close(0);
-}
-
-void	setup_signals(void)
-{
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, SIG_IGN);
+	if (tokens)
+		free_tokens(tokens);
+	if (cmds)
+		free_commands(cmds);
+	if (arr)
+		free_arr(arr);
+	if (input)
+		free(input);
 }

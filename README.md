@@ -146,7 +146,21 @@ Geralmente usada por quem quer implementar o bônus completo com parênteses e o
     * **Execução Complexa**: precisa de funções recursivas para percorrer a árvore e gerenciar os pipes entre os nós.
 
 
-* Crtl+C
-* HERE_DOC
-* Status Quote - Falar sobre o comportamento das aspas
-* Redirections
+## Status Quote - Tratamento de Aspas
+
+Tratar as aspas foi um verdadeiro desafio. A lógica adotada foi criar uma espécie de status que ajudava a nos guiar e saber se o parser estava dentro ou fora de uma aspa e se ela era simples ou dupla. Algo que facilitou muito foi criar uma estrutura enum com os tipos `OUT_QUOTE`, `IN_SQUOTE` e `IN_DQUOTE`.
+
+### 1. Aspas Simples (`'`) - "O Literal Absoluto"
+
+As aspas simples são as mais rudes. Elas ignoram **tudo** o que está dentro delas. Nada é expandido, nada é interpretado.
+- **O que acontece:** `'$VAR'` será sempre a string literal `$`, `V`, `A`, `R`.
+
+### 2. Aspas Duplas (`"`) - "O Filtro Seletivo"
+
+As aspas duplas protegem a string de ser dividida em múltiplos tokens (mantendo espaços), mas permitem que o cifrão (`$`) e a interrogação (`$?`) façam seu trabalho.
+- **O que acontece:** `"$VAR"` vira o valor da variável, mas se o valor for `ls -l`, ele continua sendo **um único token**.
+
+Em outras palavras..
+
+As aspas simples (') preservam o valor literal de todos os caracteres, enquanto as aspas duplas (") preservam o valor literal de quase todos, exceto pelo cifrão ($), que ainda permite a expansão de variáveis, e pela manutenção da string como um único argumento.
+

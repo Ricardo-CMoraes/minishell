@@ -29,12 +29,12 @@ SRC = src/builtins/builtins.c \
 		src/parser/memory_utils.c \
 		src/parser/remove_quotes.c \
 		src/parser/retokenizer.c \
-		src/executor_helpers.c \
-		src/executor_pipeline.c \
-		src/executor_utils.c \
-		src/executor.c \
+		src/executor/executor_helpers.c \
+		src/executor/executor_pipeline.c \
+		src/executor/executor_utils.c \
+		src/executor/executor.c \
+		src/executor/path.c \
 		src/main.c \
-		src/path.c \
 		src/utils.c
 
 OBJ = $(SRC:.c=.o)

@@ -26,7 +26,7 @@ void	apply_redirections(t_cmd *cmd)
 	}
 }
 
-void	child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)
+static void	child_process(t_cmd *cmd, t_cmd *cmds, char ***envp)
 {
 	char	*path;
 

@@ -19,6 +19,25 @@ static void	print_unset_error(char *arg)
 	ft_putendl_fd("': not a valid identifier", 2);
 }
 
+static int	env_unset(char **envp, const char *key)
+{
+	int	idx;
+
+	if (!envp || !key)
+		return (0);
+	idx = env_find(envp, key);
+	if (idx < 0)
+		return (0);
+	free(envp[idx]);
+	while (envp[idx + 1])
+	{
+		envp[idx] = envp[idx + 1];
+		idx++;
+	}
+	envp[idx] = NULL;
+	return (0);
+}
+
 int	fd_unset(char **args, char ***envp)
 {
 	int	i;
